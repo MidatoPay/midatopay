@@ -30,7 +30,7 @@ async function main() {
     create: {
       email: 'barista@cafe.com',
       password: merchantPassword,
-      name: 'Café del Barrio',
+      name: 'Cafe del Barrio',
       phone: '+5491123456789',
       role: 'MERCHANT',
       isActive: true

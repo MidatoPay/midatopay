@@ -147,14 +147,19 @@ export default function PaymentSuccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#f7f7f6' }}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="shadow-sm border-b" style={{ backgroundColor: '#f7f7f6', borderColor: 'rgba(254,108,28,0.3)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-              <h1 className="text-xl font-bold text-gray-900">Pago Confirmado</h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fe6c1c 0%, #ff8c42 100%)' }}>
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#fe6c1c' }}>Pago Confirmado</h1>
+                <p className="text-sm" style={{ color: '#5d5d5d' }}>Transacción exitosa</p>
+              </div>
             </div>
           </div>
         </div>
@@ -168,73 +173,67 @@ export default function PaymentSuccessPage() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-10 h-10 text-green-600" />
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'rgba(254,108,28,0.1)' }}>
+            <CheckCircle className="w-10 h-10" style={{ color: '#fe6c1c' }} />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">¡Pago Exitoso!</h2>
+          <h2 className="text-3xl font-bold mb-2" style={{ color: '#fe6c1c', fontFamily: 'Gromm, sans-serif' }}>¡Pago Exitoso!</h2>
           <p className="text-gray-600">
             Tu pago ha sido procesado y confirmado exitosamente
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="max-w-2xl mx-auto">
           {/* Detalles del pago */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            className="mb-8"
           >
-            <Card>
+            <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle>Detalles del Pago</CardTitle>
-                <CardDescription>
+                <CardTitle style={{ color: '#fe6c1c' }}>Detalles del Pago</CardTitle>
+                <CardDescription style={{ color: '#5d5d5d' }}>
                   Información completa de la transacción
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Concepto:</span>
-                  <span className="font-medium">{payment.concept}</span>
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Concepto:</span>
+                  <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.concept}</span>
                 </div>
                 
                 {payment.orderId && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Orden:</span>
-                    <span className="font-medium">{payment.orderId}</span>
+                    <span className="text-sm" style={{ color: '#5d5d5d' }}>Orden:</span>
+                    <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.orderId}</span>
                   </div>
                 )}
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Monto pagado:</span>
-                  <span className="font-bold text-lg">
-                    {parseFloat(transaction.amount).toFixed(transaction.currency === 'BTC' ? 8 : 6)} {transaction.currency}
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Monto pagado:</span>
+                  <span className="font-bold text-lg" style={{ color: '#1a1a1a' }}>
+                    ${parseFloat(transaction.amount)} ARS
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Recibido por comercio:</span>
-                  <span className="font-bold text-lg">
-                    ${parseFloat(transaction.finalAmount)} {transaction.finalCurrency}
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Recibido por comercio:</span>
+                  <span className="font-bold text-lg" style={{ color: '#1a1a1a' }}>
+                    ${parseFloat(transaction.finalAmount)} ARS
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Tasa de cambio:</span>
-                  <span className="font-medium">
-                    1 {transaction.currency} = ${transaction.exchangeRate} {transaction.finalCurrency}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Estado:</span>
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Estado:</span>
                   <Badge variant="success">
                     {transaction.status === 'CONFIRMED' ? 'Confirmado' : transaction.status}
                   </Badge>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Fecha:</span>
-                  <span className="font-medium">
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Fecha:</span>
+                  <span className="font-medium" style={{ color: '#1a1a1a' }}>
                     {new Date(transaction.createdAt).toLocaleString('es-AR')}
                   </span>
                 </div>
@@ -242,70 +241,15 @@ export default function PaymentSuccessPage() {
             </Card>
           </motion.div>
 
-          {/* Información blockchain */}
+          {/* Acciones */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Card>
+            <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle>Información Blockchain</CardTitle>
-                <CardDescription>
-                  Detalles de la transacción en la blockchain
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Hash de transacción:</span>
-                  <div className="flex items-center space-x-2">
-                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                      {transaction.blockchainTxHash?.substring(0, 20)}...
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(transaction.blockchainTxHash || '')
-                      }}
-                    >
-                      <Hash className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Confirmaciones:</span>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium">{transaction.confirmationCount}</span>
-                    <Clock className="w-4 h-4 text-gray-400" />
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">ID de transacción:</span>
-                  <div className="flex items-center space-x-2">
-                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                      {transaction.id.substring(0, 12)}...
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(transaction.id)
-                      }}
-                    >
-                      <Hash className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Acciones */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle className="text-lg">Acciones</CardTitle>
+                <CardTitle className="text-lg" style={{ color: '#fe6c1c' }}>Acciones</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -339,52 +283,6 @@ export default function PaymentSuccessPage() {
           </motion.div>
         </div>
 
-        {/* Información adicional */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">¿Qué sigue?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Pago Confirmado</h3>
-                  <p className="text-sm text-gray-600">
-                    El comercio recibirá la notificación y el dinero en su cuenta
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <DollarSign className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Conversión Automática</h3>
-                  <p className="text-sm text-gray-600">
-                    El pago se convierte automáticamente a pesos argentinos
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Hash className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Transparencia Total</h3>
-                  <p className="text-sm text-gray-600">
-                    Toda la información está registrada en la blockchain
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
       </div>
     </div>
   )

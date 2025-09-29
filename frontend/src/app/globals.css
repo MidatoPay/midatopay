@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fuente personalizada Boeing */
+@font-face {
+  font-family: 'Boeing';
+  src: url('/boeing.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fuente personalizada Gromm */
+@font-face {
+  font-family: 'Gromm';
+  src: url('/gromm.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Importar Montserrat desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -55,17 +76,17 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #000000 !important;
+    background-color: #f7f7f6 !important;
   }
   html {
-    background-color: #000000 !important;
+    background-color: #f7f7f6 !important;
   }
 }
 
 /* Estilos personalizados para MidatoPay */
 @layer components {
   .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #fe6c1c 0%, #fe9c42 100%);
   }
   
   .crypto-gradient-usdt {
@@ -82,8 +103,8 @@
   
   .glass-effect {
     backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(247, 247, 246, 0.1);
+    border: 1px solid rgba(254, 108, 28, 0.2);
   }
   
   .qr-code-container {
@@ -126,8 +147,8 @@
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+  0%, 100% { box-shadow: 0 0 5px rgba(254, 108, 28, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(254, 108, 28, 0.8); }
 }
 
 .animate-float {
@@ -147,4 +168,40 @@
   .mobile-stack {
     @apply flex-col space-y-4 space-x-0;
   }
+}
+
+/* PillNav Custom Styles */
+.custom-pill-nav {
+  font-family: 'Gromm, sans-serif';
+}
+
+.custom-pill-nav .pill {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.custom-pill-nav .pill:hover {
+  transform: translateY(-1px);
+}
+
+.custom-pill-nav .pill-logo {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.custom-pill-nav .pill-logo:hover {
+  transform: scale(1.05);
+}
+
+.custom-pill-nav .pill-nav-items {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(26, 26, 26, 0.1);
+}
+
+.custom-pill-nav .pill-logo {
+  border: 1px solid rgba(26, 26, 26, 0.1);
 }

@@ -94,6 +94,16 @@ model ExchangeRate {
   @@map("exchange_rates")
 }
 
+model Waitlist {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  monthlyBillingUsd Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("waitlist")
+}
+
 enum UserRole {
   MERCHANT
   ADMIN

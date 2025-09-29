@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const paymentRoutes = require('./routes/payments');
 const transactionRoutes = require('./routes/transactions');
 const oracleRoutes = require('./routes/oracle');
+const waitlistRoutes = require('./routes/waitlist');
 const { errorHandler } = require('./middleware/errorHandler');
 const { initializeWebSocket } = require('./services/websocket');
 const { startPriceOracle } = require('./services/priceOracle');
@@ -20,7 +21,11 @@ app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://midatopay.com'] 
-    : ['http://localhost:3000'],
+    : [
+        'http://localhost:3000',
+        /^https:\/\/.*\.ngrok\.io$/,
+        /^https:\/\/.*\.ngrok-free\.app$/
+      ],
   credentials: true
 }));
 
@@ -50,6 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/oracle', oracleRoutes);
+app.use('/api/waitlist', waitlistRoutes);
 
 // Middleware de manejo de errores
 app.use(errorHandler);

@@ -50,7 +50,14 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Colores personalizados para MidatoPay
+        // Nueva paleta de colores para MidatoPay
+        primary: {
+          orange: "#fe6c1c",
+          lightOrange: "#fe9c42",
+          yellow: "#fec665",
+          gray: "#5d5d5d",
+          cream: "#f7f7f6",
+        },
         crypto: {
           usdt: "#26a17b",
           btc: "#f7931a",

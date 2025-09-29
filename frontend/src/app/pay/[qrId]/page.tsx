@@ -71,7 +71,9 @@ export default function PayPage() {
 
       setPayment(data.payment)
       setPaymentOptions(data.paymentOptions)
-      setSelectedOption(data.paymentOptions[0]) // Seleccionar ARS por defecto
+      // Siempre seleccionar ARS automáticamente
+      const arsOption = data.paymentOptions.find(option => option.currency === 'ARS')
+      setSelectedOption(arsOption || data.paymentOptions[0])
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Error desconocido')
     } finally {
@@ -80,14 +82,14 @@ export default function PayPage() {
   }
 
   const handlePayment = async () => {
-    if (!selectedOption || !payment) return
+    if (!payment) return
 
     setIsProcessing(true)
     try {
       const transactionData = {
         paymentId: payment.id,
-        currency: selectedOption.currency,
-        amount: parseFloat(selectedOption.amount),
+        currency: 'ARS',
+        amount: payment.amount,
       };
       
       console.log('📤 Enviando datos de transacción:', transactionData);
@@ -176,14 +178,19 @@ export default function PayPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#f7f7f6' }}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="shadow-sm border-b" style={{ backgroundColor: '#f7f7f6', borderColor: 'rgba(26,26,26,0.08)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-4">
-            <div className="flex items-center space-x-2">
-              <QrCode className="w-6 h-6 text-blue-600" />
-              <h1 className="text-xl font-bold text-gray-900">Pagar con MidatoPay</h1>
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fe6c1c 0%, #fe9c42 100%)' }}>
+                <QrCode className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>Pagar con MidatoPay</h1>
+                <p className="text-sm" style={{ color: '#5d5d5d' }}>Pago seguro y rápido</p>
+              </div>
             </div>
           </div>
         </div>
@@ -197,39 +204,39 @@ export default function PayPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle>Detalles del Pago</CardTitle>
-                <CardDescription>
+                <CardTitle style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>Detalles del Pago</CardTitle>
+                <CardDescription style={{ color: '#5d5d5d' }}>
                   Información del comercio y el pago
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Comercio:</span>
-                  <span className="font-medium">{payment.merchant.name}</span>
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Comercio:</span>
+                  <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.merchant.name}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Concepto:</span>
-                  <span className="font-medium">{payment.concept}</span>
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Concepto:</span>
+                  <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.concept}</span>
                 </div>
                 
                 {payment.orderId && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Orden:</span>
-                    <span className="font-medium">{payment.orderId}</span>
+                    <span className="text-sm" style={{ color: '#5d5d5d' }}>Orden:</span>
+                    <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.orderId}</span>
                   </div>
                 )}
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Monto original:</span>
-                  <span className="font-bold text-lg">${payment.amount} {payment.currency}</span>
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Monto original:</span>
+                  <span className="font-bold text-lg" style={{ color: '#1a1a1a' }}>${payment.amount} ARS</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Expira:</span>
-                  <span className="text-sm">
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Expira:</span>
+                  <span className="text-sm" style={{ color: '#5d5d5d' }}>
                     {new Date(payment.expiresAt).toLocaleString('es-AR')}
                   </span>
                 </div>
@@ -243,86 +250,71 @@ export default function PayPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Card>
+            <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle>Opciones de Pago</CardTitle>
-                <CardDescription>
-                  Elige cómo quieres pagar
+                <CardTitle style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>Opciones de Pago</CardTitle>
+                <CardDescription style={{ color: '#5d5d5d' }}>
+                  Paga directamente en pesos argentinos
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Solo mostrar ARS */}
                 <div className="space-y-3 mb-6">
-                  {paymentOptions.map((option, index) => (
+                  {paymentOptions.filter(option => option.currency === 'ARS').map((option, index) => (
                     <div
                       key={option.currency}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        selectedOption?.currency === option.currency
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => setSelectedOption(option)}
+                      className="p-4 rounded-lg border-2 cursor-pointer transition-all"
+                      style={{ 
+                        border: '2px solid rgba(254,108,28,0.3)',
+                        backgroundColor: 'rgba(254,108,28,0.05)'
+                      }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
-                            option.currency === 'ARS' ? 'bg-blue-600' :
-                            option.currency === 'USDT' ? 'bg-green-600' :
-                            option.currency === 'BTC' ? 'bg-orange-600' :
-                            'bg-purple-600'
-                          }`}>
-                            {option.currency}
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: '#fe6c1c' }}>
+                            <img src="/logo-arg.png" alt="ARS" className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="font-medium">{option.currency}</p>
-                            <p className="text-sm text-gray-600">
-                              {option.source} • {option.rate ? `1 ${option.currency} = $${option.rate} ARS` : 'Directo'}
-                            </p>
+                            <p className="font-medium" style={{ color: '#1a1a1a' }}>ARS</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg">
-                            {parseFloat(option.amount).toFixed(option.currency === 'BTC' ? 8 : 6)} {option.currency}
+                          <p className="font-bold text-lg" style={{ color: '#1a1a1a' }}>
+                            ${payment.amount} ARS
                           </p>
-                          {option.validFor && (
-                            <p className="text-xs text-gray-500">
-                              Válido por {option.validFor}s
-                            </p>
-                          )}
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {selectedOption && (
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h3 className="font-semibold mb-2">Resumen del Pago</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Monto a pagar:</span>
-                        <span className="font-medium">
-                          {parseFloat(selectedOption.amount).toFixed(selectedOption.currency === 'BTC' ? 8 : 6)} {selectedOption.currency}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Recibirá el comercio:</span>
-                        <span className="font-medium">${payment.amount} {payment.currency}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Tasa de cambio:</span>
-                        <span className="font-medium">
-                          {selectedOption.rate ? `1 ${selectedOption.currency} = $${selectedOption.rate} ARS` : 'Directo'}
-                        </span>
-                      </div>
+                {/* Resumen del pago simplificado */}
+                <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                  <h3 className="font-semibold mb-2" style={{ color: '#10b981' }}>Resumen del Pago</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span style={{ color: '#1a1a1a' }}>Monto a pagar:</span>
+                      <span className="font-medium" style={{ color: '#1a1a1a' }}>
+                        ${payment.amount} ARS
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span style={{ color: '#5d5d5d' }}>Recibirá el comercio:</span>
+                      <span className="font-medium" style={{ color: '#1a1a1a' }}>${payment.amount} ARS</span>
                     </div>
                   </div>
-                )}
+                </div>
 
                 <Button
                   onClick={handlePayment}
-                  disabled={!selectedOption || isProcessing}
-                  className="w-full"
-                  size="lg"
+                  disabled={isProcessing}
+                  className="w-full h-12 text-base font-semibold rounded-xl transition-all duration-200"
+                  style={{ 
+                    backgroundColor: '#fe6c1c', 
+                    color: '#ffffff', 
+                    border: 'none',
+                    fontFamily: 'Gromm, sans-serif'
+                  }}
                 >
                   {isProcessing ? (
                     <>
@@ -332,14 +324,14 @@ export default function PayPage() {
                   ) : (
                     <>
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Pagar {selectedOption ? `${parseFloat(selectedOption.amount).toFixed(selectedOption.currency === 'BTC' ? 8 : 6)} ${selectedOption.currency}` : ''}
+                      Pagar
                     </>
                   )}
                 </Button>
 
-                <div className="mt-4 text-xs text-gray-500 text-center">
+                <div className="mt-4 text-xs text-center" style={{ color: '#5d5d5d' }}>
                   <p>Al pagar, aceptas nuestros términos y condiciones</p>
-                  <p>El pago se procesará de forma segura en la blockchain</p>
+                  <p>El pago se procesará de forma segura</p>
                 </div>
               </CardContent>
             </Card>
@@ -353,38 +345,38 @@ export default function PayPage() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-8"
         >
-          <Card>
+          <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
             <CardHeader>
-              <CardTitle className="text-lg">¿Cómo funciona?</CardTitle>
+              <CardTitle className="text-lg" style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>¿Cómo funciona?</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <QrCode className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'rgba(254,108,28,0.1)' }}>
+                    <QrCode className="w-6 h-6" style={{ color: '#fe6c1c' }} />
                   </div>
-                  <h3 className="font-semibold mb-2">1. Escanea el QR</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-semibold mb-2" style={{ color: '#fe6c1c' }}>1. Escanea el QR</h3>
+                  <p className="text-sm" style={{ color: '#5d5d5d' }}>
                     El comercio genera un código QR único para el pago
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <DollarSign className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'rgba(254,108,28,0.1)' }}>
+                    <DollarSign className="w-6 h-6" style={{ color: '#fe6c1c' }} />
                   </div>
-                  <h3 className="font-semibold mb-2">2. Elige tu moneda</h3>
-                  <p className="text-sm text-gray-600">
-                    Paga con ARS, USDT, Bitcoin o Ethereum al mejor precio
+                  <h3 className="font-semibold mb-2" style={{ color: '#fe6c1c' }}>2. Paga en ARS</h3>
+                  <p className="text-sm" style={{ color: '#5d5d5d' }}>
+                    Paga directamente en pesos argentinos de forma segura
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <CheckCircle className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
+                    <CheckCircle className="w-6 h-6" style={{ color: '#10b981' }} />
                   </div>
-                  <h3 className="font-semibold mb-2">3. Confirmación</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-semibold mb-2" style={{ color: '#10b981' }}>3. Confirmación</h3>
+                  <p className="text-sm" style={{ color: '#5d5d5d' }}>
                     Recibe confirmación instantánea del pago
                   </p>
                 </div>

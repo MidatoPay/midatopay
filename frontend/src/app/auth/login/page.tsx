@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,6 +16,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthActions } from '@/store/auth'
 import { DollarSign, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import PixelBlast from '@/components/PixelBlast'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -48,8 +50,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <motion.div
+    <div className="min-h-screen grid md:grid-cols-2" style={{ backgroundColor: '#f7f7f6' }}>
+      {/* Panel izquierdo: fondo naranja + PixelBlast blanco */}
+      <div className="relative hidden md:block">
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #fe6c1c 0%, #fe9c42 100%)' }} />
+        <PixelBlast color="#ffffff" className="absolute inset-0" pixelSize={3} patternScale={2} />
+      </div>
+
+      {/* Panel derecho: contenido de login */}
+      <div className="flex items-center justify-center p-4">
+        <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -57,44 +67,57 @@ export default function LoginPage() {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+          <Link href="/" className="inline-flex items-center space-x-2 transition-colors mb-4" style={{ color: '#1a1a1a' }}>
             <ArrowLeft className="w-4 h-4" />
             <span>Volver al inicio</span>
           </Link>
           
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#f7f7f6', border: '1px solid rgba(26,26,26,0.1)' }}>
+              <Image src="/logo.png" alt="MidatoPay logo" width={24} height={24} className="rounded" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              MidatoPay
-            </span>
+            <span className="text-2xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>MidatoPay</span>
           </div>
           
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Iniciar Sesión</h1>
-          <p className="text-gray-600">Accede a tu cuenta para gestionar tus pagos</p>
+          <h1 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Gromm, sans-serif', color: '#fe6c1c' }}>INICIAR SESIÓN</h1>
+          <p style={{ fontFamily: 'Montserrat, sans-serif', color: '#5d5d5d' }}>Accedé a tu cuenta para gestionar tus pagos</p>
         </div>
 
         {/* Formulario */}
-        <Card className="shadow-xl">
+        <Card
+          className="shadow-xl"
+          style={{
+            backgroundColor: 'rgba(254, 108, 28, 0.15)',
+            borderColor: 'rgba(254, 108, 28, 0.35)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            boxShadow: '0 20px 40px rgba(254, 108, 28, 0.15), inset 0 1px 0 rgba(255,255,255,0.2)'
+          }}
+        >
+          {/* Acento superior */}
+          <div style={{ height: 4, background: 'linear-gradient(90deg,#fe6c1c,#fe9c42)' }} />
           <CardHeader>
-            <CardTitle>Bienvenido de vuelta</CardTitle>
-            <CardDescription>
-              Ingresa tus credenciales para acceder a tu cuenta
+            <CardTitle style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>BIENVENIDO DE VUELTA</CardTitle>
+            <CardDescription style={{ color: '#5d5d5d' }}>
+              Ingresá tus credenciales para acceder a tu cuenta
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  {...register('email')}
-                  className={errors.email ? 'border-red-500' : ''}
-                />
+                <Label htmlFor="email" style={{ color: '#1a1a1a' }}>Email</Label>
+                <div className="relative">
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    {...register('email')}
+                    className={(errors.email ? 'border-red-500 ' : '') + 'pl-10 focus:ring-2 focus:ring-[#fe9c42]'}
+                    style={{ backgroundColor: '#ffffff', borderColor: '#fe6c1c', color: '#1a1a1a' }}
+                  />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5d5d5d]">@</span>
+                </div>
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
@@ -102,19 +125,21 @@ export default function LoginPage() {
 
               {/* Contraseña */}
               <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password" style={{ color: '#1a1a1a' }}>Contraseña</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Tu contraseña"
                     {...register('password')}
-                    className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                    className={(errors.password ? 'border-red-500 pr-10 ' : 'pr-10 ') + 'focus:ring-2 focus:ring-[#fe9c42]'}
+                    style={{ backgroundColor: '#ffffff', borderColor: '#fe6c1c', color: '#1a1a1a' }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    style={{ color: '#5d5d5d' }}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -136,44 +161,42 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full"
                 disabled={isLoading}
+                style={{ backgroundColor: '#fe6c1c', color: '#ffffff', border: '1px solid #fe6c1c' }}
               >
                 {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </Button>
             </form>
 
             {/* Enlaces adicionales */}
-            <div className="mt-6 text-center space-y-2">
+            <div className="mt-6">
+              <div className="h-px w-full" style={{ backgroundColor: 'rgba(26,26,26,0.08)' }} />
+              <div className="mt-4 text-center space-y-2">
               <Link
                 href="/auth/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                className="text-sm transition-colors"
+                style={{ color: '#1a1a1a' }}
               >
                 ¿Olvidaste tu contraseña?
               </Link>
               
-              <div className="text-sm text-gray-600">
+              <div className="text-sm" style={{ color: '#5d5d5d' }}>
                 ¿No tienes cuenta?{' '}
                 <Link
                   href="/auth/register"
-                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                  className="font-medium transition-colors underline-offset-2 hover:underline"
+                  style={{ color: '#1a1a1a' }}
                 >
                   Regístrate aquí
                 </Link>
+              </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Demo credentials */}
-        <Card className="mt-6 bg-blue-50 border-blue-200">
-          <CardContent className="p-4">
-            <h3 className="font-semibold text-blue-900 mb-2">Credenciales de Demo</h3>
-            <div className="text-sm text-blue-800 space-y-1">
-              <p><strong>Comercio:</strong> barista@cafe.com / merchant123</p>
-              <p><strong>Admin:</strong> admin@midatopay.com / admin123</p>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+        
+        </motion.div>
+      </div>
     </div>
   )
 }
