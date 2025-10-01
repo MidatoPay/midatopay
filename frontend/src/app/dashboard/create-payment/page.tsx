@@ -20,7 +20,7 @@ const createPaymentSchema = z.object({
   amount: z.number().min(1, 'El monto debe ser mayor a 0'),
   concept: z.string().min(1, 'El concepto es requerido'),
   orderId: z.string().optional(),
-  receiveCurrency: z.enum(['USDT', 'BTC', 'ETH']).default('USDT'),
+  receiveCurrency: z.enum(['USDT', 'BTC', 'ETH', 'STRK']).default('STRK'),
 })
 
 type CreatePaymentForm = z.infer<typeof createPaymentSchema>
@@ -45,7 +45,7 @@ export default function CreatePaymentPage() {
       amount: undefined,
       concept: '',
       orderId: '',
-      receiveCurrency: 'USDT',
+      receiveCurrency: 'STRK',
     },
   })
 
@@ -59,6 +59,7 @@ export default function CreatePaymentPage() {
       'USDT': 1380, // 1 USDT = 1380 ARS
       'BTC': 0.000023, // 1 BTC = ~58,000,000 ARS (aproximado)
       'ETH': 0.00036, // 1 ETH = ~3,800,000 ARS (aproximado)
+      'STRK': 122, // 1 STRK = ~122 ARS (aproximado)
     }
     return rates[currency] || 1380
   }
@@ -73,6 +74,8 @@ export default function CreatePaymentPage() {
     const rate = getConversionRate(currency)
     if (currency === 'BTC' || currency === 'ETH') {
       return (numAmount / rate).toFixed(8)
+    } else if (currency === 'STRK') {
+      return (numAmount / rate).toFixed(6)
     }
     return (numAmount / rate).toFixed(2)
   }
@@ -306,6 +309,7 @@ export default function CreatePaymentPage() {
                         <option value="USDT">USDT (Tether)</option>
                         <option value="BTC">Bitcoin (BTC)</option>
                         <option value="ETH">Ethereum (ETH)</option>
+                        <option value="STRK">Starknet (STRK)</option>
                       </select>
                       {/* Logo de la criptomoneda seleccionada */}
                       <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -341,6 +345,15 @@ export default function CreatePaymentPage() {
                                 </clipPath>
                               </defs>
                             </svg>
+                          </div>
+                        )}
+                        {watchedReceiveCurrency === 'STRK' && (
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden" style={{ backgroundColor: '#EC796B' }}>
+                            <img 
+                              src="/starknet-logo.png" 
+                              alt="Starknet" 
+                              className="w-4 h-4 object-contain"
+                            />
                           </div>
                         )}
                       </div>
