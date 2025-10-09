@@ -10,7 +10,7 @@ class MidatoPayService {
   }
 
   // Generar QR de pago para comercio
-  async generatePaymentQR(merchantId, amountARS, targetCrypto, concept = 'Pago QR') {
+  async generatePaymentQR(merchantId, amountARS, concept = 'Pago QR') {
     try {
       // 1. Obtener datos del comercio
       const merchant = await this.getMerchant(merchantId);
@@ -18,41 +18,38 @@ class MidatoPayService {
         throw new Error('Merchant not found');
       }
 
-      // 2. Generar session ID único
-      const sessionId = this.qrGenerator.generateSessionId();
+      // 2. Generar payment ID único
+      const paymentId = this.qrGenerator.generatePaymentId();
       
-      // 3. Preparar datos para QR (SIN conversión - el Oracle lo hará)
-      const paymentData = {
-        amountARS,
-        targetCrypto,
-        cryptoAmount: null, // El Oracle calculará esto
-        exchangeRate: null, // El Oracle calculará esto
-        merchantWallet: merchant.walletAddress,
-        concept,
-        sessionId,
-        timestamp: new Date()
-      };
-
-      // 4. Validar datos básicos
-      const validation = this.qrGenerator.validatePaymentData(merchant, paymentData);
+      // 3. Validar datos básicos
+      const validation = this.qrGenerator.validatePaymentData(
+        merchant.walletAddress, 
+        amountARS, 
+        paymentId
+      );
       if (!validation.isValid) {
         throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
       }
 
-      // 5. Generar TLV data
-      const tlvData = this.qrGenerator.generateEMVQR(merchant, paymentData);
+      // 4. Generar TLV data con solo 3 campos
+      const tlvData = this.qrGenerator.generateEMVQR(
+        merchant.walletAddress,
+        amountARS,
+        paymentId
+      );
       
-      // 6. Agregar QR data a paymentData
-      paymentData.qrCode = tlvData;
-      
-      // 7. Generar QR visual
+      // 5. Generar QR visual
       const qrCodeImage = await this.qrGenerator.generateQRCodeImage(tlvData);
       
-      // 8. Guardar sesión en base de datos
-      console.log('💾 Guardando pago con sessionId:', sessionId);
+      // 6. Guardar sesión en base de datos
+      console.log('💾 Guardando pago con paymentId:', paymentId);
       console.log('💾 MerchantId:', merchantId);
-      console.log('💾 PaymentData:', paymentData);
-      await this.savePaymentSession(sessionId, merchantId, paymentData);
+      console.log('💾 Amount:', amountARS);
+      await this.savePaymentSession(paymentId, merchantId, {
+        amountARS,
+        concept,
+        merchantWallet: merchant.walletAddress
+      });
       console.log('✅ Pago guardado exitosamente');
       
       return {
@@ -60,13 +57,11 @@ class MidatoPayService {
         qrCodeImage,
         tlvData,
         paymentData: {
+          paymentId,
           amountARS,
-          targetCrypto,
-          cryptoAmount: null, // El Oracle calculará esto
-          exchangeRate: null, // El Oracle calculará esto
-          sessionId,
+          merchantAddress: merchant.walletAddress,
           merchantName: merchant.name,
-          merchantWallet: merchant.walletAddress
+          concept
         }
       };
       
@@ -114,20 +109,20 @@ class MidatoPayService {
   }
 
   // Guardar sesión de pago
-  async savePaymentSession(sessionId, merchantId, paymentData) {
+  async savePaymentSession(paymentId, merchantId, paymentData) {
     try {
       // Calcular tiempo de expiración (30 minutos)
       const expirationTime = new Date();
       expirationTime.setMinutes(expirationTime.getMinutes() + 30);
 
       console.log('💾 Creando pago en BD con datos:', {
-        sessionId,
+        paymentId,
         merchantId,
         amount: paymentData.amountARS,
         concept: paymentData.concept || 'Pago QR',
-        orderId: sessionId,
+        orderId: paymentId,
         status: 'PENDING',
-        qrCode: paymentData.qrCode || 'QR_PLACEHOLDER',
+        qrCode: 'QR_SIMPLE',
         expiresAt: expirationTime
       });
 
@@ -136,9 +131,9 @@ class MidatoPayService {
           amount: paymentData.amountARS, // Campo obligatorio del schema
           currency: 'ARS', // Campo obligatorio del schema
           concept: paymentData.concept || 'Pago QR', // Campo obligatorio del schema
-          orderId: sessionId, // Usar sessionId como orderId
+          orderId: paymentId, // Usar paymentId como orderId
           status: 'PENDING', // Campo obligatorio del schema
-          qrCode: paymentData.qrCode || 'QR_PLACEHOLDER', // Campo obligatorio del schema
+          qrCode: 'QR_SIMPLE', // Campo obligatorio del schema
           expiresAt: expirationTime, // Campo obligatorio del schema
           userId: merchantId // Campo obligatorio del schema para la relación
         }
@@ -250,52 +245,24 @@ class MidatoPayService {
   // Escanear QR y obtener datos del pago
   async scanPaymentQR(qrData) {
     try {
-      // Parsear el QR EMVCo TLV
-      const paymentInfo = this.parseEMVQR(qrData);
+      // Parsear el QR simplificado
+      const qrInfo = this.qrParser.parseEMVQR(qrData);
       
-      if (!paymentInfo.isValid) {
-        throw new Error(`QR Code no válido: ${paymentInfo.error}`);
+      if (!qrInfo.isValid) {
+        throw new Error(`QR Code no válido: ${qrInfo.error}`);
       }
 
-      // Buscar el pago en la base de datos usando coincidencia parcial
-      // El QR puede tener un sessionId más largo que el orderId en BD
-      console.log('Buscando pago con sessionId:', paymentInfo.sessionId);
-      console.log('QR Data completo:', qrData);
+      const { merchantAddress, amount, paymentId } = qrInfo.data;
+
+      // Buscar el pago en la base de datos
+      console.log('Buscando pago con paymentId:', paymentId);
       
-      // Primero intentar coincidencia exacta
-      let payment = await prisma.payment.findFirst({
-        where: { orderId: paymentInfo.sessionId },
+      const payment = await prisma.payment.findFirst({
+        where: { orderId: paymentId },
         include: { user: true }
       });
 
-      // Si no encuentra, intentar coincidencia parcial (el QR puede tener sufijos adicionales)
       if (!payment) {
-        console.log('No se encontró con coincidencia exacta, intentando coincidencia parcial...');
-        // Extraer la parte base del sessionId (sess_timestamp_hash)
-        // El hash en el QR puede tener caracteres adicionales, así que buscamos por el patrón base
-        const baseSessionId = paymentInfo.sessionId.substring(0, paymentInfo.sessionId.lastIndexOf('_') + 9);
-        console.log('Buscando con baseSessionId:', baseSessionId);
-        
-        payment = await prisma.payment.findFirst({
-          where: { 
-            orderId: { 
-              startsWith: baseSessionId
-            }
-          },
-          include: { user: true }
-        });
-      }
-
-      console.log('Pago encontrado:', payment);
-
-      if (!payment) {
-        // Buscar todos los pagos para debug
-        const allPayments = await prisma.payment.findMany({
-          take: 5,
-          orderBy: { createdAt: 'desc' }
-        });
-        console.log('Últimos 5 pagos:', allPayments);
-        console.log('Buscando por orderId:', paymentInfo.sessionId);
         throw new Error('Pago no encontrado');
       }
 
@@ -308,19 +275,14 @@ class MidatoPayService {
       if (payment.status !== 'PENDING') {
         throw new Error('El pago ya fue procesado');
       }
-
-      // Extraer datos reales del QR parseado
-      const parsedQRData = this.parseEMVQR(qrData);
       
       return {
         success: true,
         paymentData: {
-          sessionId: payment.orderId,
+          paymentId,
+          merchantAddress,
+          amountARS: amount,
           merchantName: payment.user.name,
-          amountARS: parseFloat(payment.amount),
-          targetCrypto: parsedQRData.targetCrypto || 'USDT', // Usar datos del QR o USDT por defecto
-          cryptoAmount: null, // El Oracle calculará esto
-          exchangeRate: null, // El Oracle calculará esto
           concept: payment.concept,
           expiresAt: payment.expiresAt.toISOString(),
           status: payment.status
@@ -336,13 +298,13 @@ class MidatoPayService {
   }
 
   // Procesar pago ARS
-  async processARSPayment(sessionId, arsPaymentData) {
+  async processARSPayment(paymentId, arsPaymentData) {
     try {
-      console.log('🔄 Procesando pago ARS:', { sessionId, arsPaymentData });
+      console.log('🔄 Procesando pago ARS:', { paymentId, arsPaymentData });
       
       // Buscar el pago
       const payment = await prisma.payment.findFirst({
-        where: { orderId: sessionId },
+        where: { orderId: paymentId },
         include: { user: true }
       });
 
@@ -375,10 +337,10 @@ class MidatoPayService {
       const swapResult = await this.cavosService.executeARSToCryptoSwap({
         merchantWalletAddress: payment.user.walletAddress || `temp_wallet_${payment.user.id}`,
         amountARS: arsPaymentData.amount,
-        targetCrypto: arsPaymentData.targetCrypto,
+        targetCrypto: arsPaymentData.targetCrypto || 'USDT',
         cryptoAmount: null, // El Oracle calculará esto
         exchangeRate: null, // El Oracle calculará esto
-        sessionId: sessionId
+        paymentId: paymentId
       });
 
       if (!swapResult.success) {
@@ -401,7 +363,7 @@ class MidatoPayService {
         data: {
           paymentId: payment.id,
           amount: swapResult.cryptoAmount, // Del Oracle
-          currency: arsPaymentData.targetCrypto,
+          currency: arsPaymentData.targetCrypto || 'USDT',
           exchangeRate: swapResult.exchangeRate, // Del Oracle
           finalAmount: parseFloat(payment.amount),
           finalCurrency: 'ARS',
@@ -418,7 +380,7 @@ class MidatoPayService {
         paymentId: payment.id,
         transactionId: transaction.id,
         cryptoAmount: swapResult.cryptoAmount, // Del Oracle
-        targetCrypto: arsPaymentData.targetCrypto,
+        targetCrypto: arsPaymentData.targetCrypto || 'USDT',
         blockchainTxHash: swapResult.transactionHash,
         explorerUrl: swapResult.explorerUrl,
         mode: swapResult.mode || 'REAL'
@@ -431,7 +393,7 @@ class MidatoPayService {
           ? 'Pago procesado exitosamente (Modo Simulación)' 
           : 'Pago procesado exitosamente',
         cryptoAmount: swapResult.cryptoAmount, // Del Oracle
-        targetCrypto: arsPaymentData.targetCrypto,
+        targetCrypto: arsPaymentData.targetCrypto || 'USDT',
         exchangeRate: swapResult.exchangeRate, // Del Oracle
         blockchainTxHash: swapResult.transactionHash,
         explorerUrl: swapResult.explorerUrl,
@@ -448,68 +410,6 @@ class MidatoPayService {
     }
   }
 
-  // Parsear QR EMVCo TLV
-  parseEMVQR(qrData) {
-    try {
-      // Buscar el patrón sess_ seguido de timestamp y exactamente 8 caracteres hex
-      // El sessionId real es: sess_1759532707710_cf360816 (8 caracteres hex)
-      // CORREGIDO: Capturar exactamente 8 caracteres hex después del timestamp
-      const sessionMatch = qrData.match(/sess_(\d+)_([a-f0-9]{8})/i);
-      
-      if (sessionMatch) {
-        const fullMatch = sessionMatch[0];
-        const timestamp = sessionMatch[1];
-        const hash = sessionMatch[2];
-        
-        // Validar longitud del timestamp (debe tener al menos 10 dígitos)
-        if (timestamp.length < 10) {
-          console.warn('⚠️ Timestamp inválido en QR:', timestamp);
-          return { 
-            isValid: false, 
-            error: 'Timestamp inválido',
-            qrData: qrData 
-          };
-        }
-        
-        console.log('🔍 REGEX DEBUG - Full Match:', fullMatch);
-        console.log('🔍 REGEX DEBUG - Timestamp:', timestamp);
-        console.log('🔍 REGEX DEBUG - Hash:', hash);
-        console.log('🔍 REGEX DEBUG - Full QR:', qrData);
-        
-        // Extraer datos adicionales del QR
-        // CORREGIDO: Capturar solo el token (STRK, USDT, etc.) sin números adicionales
-        const targetCryptoMatch = qrData.match(/6504([A-Z]+)/);
-        const cryptoAmountMatch = qrData.match(/6609([0-9.]+)/);
-        const exchangeRateMatch = qrData.match(/6707([0-9.]+)/);
-        
-        return {
-          isValid: true,
-          sessionId: fullMatch,
-          timestamp: timestamp,
-          hash: hash,
-          targetCrypto: targetCryptoMatch ? targetCryptoMatch[1] : 'USDT',
-          cryptoAmount: null, // El Oracle calculará esto
-          exchangeRate: null, // El Oracle calculará esto
-          qrData: qrData
-        };
-      }
-      
-      console.warn('⚠️ QR inválido o sessionId no encontrado');
-      console.log('🔍 REGEX DEBUG - No match found in:', qrData);
-      return { 
-        isValid: false, 
-        error: 'SessionId no encontrado',
-        qrData: qrData 
-      };
-    } catch (error) {
-      console.error('Error parsing EMV QR:', error);
-      return { 
-        isValid: false, 
-        error: error.message,
-        qrData: qrData 
-      };
-    }
-  }
 }
 
 module.exports = MidatoPayService;
