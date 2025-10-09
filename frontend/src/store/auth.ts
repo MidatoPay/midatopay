@@ -6,6 +6,7 @@ export interface User {
   email: string
   name: string
   phone?: string
+  walletAddress?: string
   role: 'MERCHANT' | 'ADMIN'
   isActive: boolean
   createdAt: string
@@ -25,6 +26,7 @@ interface AuthActions {
   register: (userData: RegisterData) => Promise<void>
   logout: () => void
   updateProfile: (userData: Partial<User>) => Promise<void>
+  setUser: (user: User) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   clearError: () => void
@@ -165,6 +167,10 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
+      setUser: (user: User) => {
+        set({ user })
+      },
+
       setLoading: (loading: boolean) => {
         set({ isLoading: loading })
       },
@@ -209,6 +215,7 @@ export const useAuthActions = () => {
     register,
     logout,
     updateProfile,
+    setUser,
     setLoading,
     setError,
     clearError,
@@ -219,6 +226,7 @@ export const useAuthActions = () => {
     register,
     logout,
     updateProfile,
+    setUser,
     setLoading,
     setError,
     clearError,

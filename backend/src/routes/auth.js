@@ -207,6 +207,44 @@ router.put('/profile', authenticateToken, [
   }
 });
 
+// Actualizar wallet del usuario
+router.post('/update-wallet', authenticateToken, [
+  body('walletAddress').notEmpty().isLength({ min: 20 })
+], async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Datos inválidos',
+        message: 'Por favor, verifica los datos ingresados',
+        details: errors.array()
+      });
+    }
+
+    const { walletAddress } = req.body;
+
+    // Actualizar wallet del usuario
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { walletAddress },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        walletAddress: true,
+        updatedAt: true
+      }
+    });
+
+    res.json({
+      message: 'Wallet actualizada exitosamente',
+      user
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Cambiar contraseña
 router.put('/change-password', authenticateToken, [
   body('currentPassword').notEmpty(),

@@ -9,6 +9,7 @@ const paymentRoutes = require('./routes/payments');
 const transactionRoutes = require('./routes/transactions');
 const oracleRoutes = require('./routes/oracle');
 const waitlistRoutes = require('./routes/waitlist');
+const midatoPayRoutes = require('./routes/midatopay');
 const { errorHandler } = require('./middleware/errorHandler');
 const { initializeWebSocket } = require('./services/websocket');
 const { startPriceOracle } = require('./services/priceOracle');
@@ -56,6 +57,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/oracle', oracleRoutes);
 app.use('/api/waitlist', waitlistRoutes);
+app.use('/api/midatopay', midatoPayRoutes);
 
 // Middleware de manejo de errores
 app.use(errorHandler);

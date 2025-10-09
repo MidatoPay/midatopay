@@ -182,6 +182,60 @@ router.post('/:transactionId/confirm', async (req, res, next) => {
   }
 });
 
+// Obtener datos completos de una transacción
+router.get('/:transactionId', async (req, res, next) => {
+  try {
+    const { transactionId } = req.params;
+
+    const transaction = await prisma.transaction.findUnique({
+      where: { id: transactionId },
+      include: {
+        payment: {
+          select: {
+            id: true,
+            amount: true,
+            currency: true,
+            concept: true,
+            status: true,
+            orderId: true
+          }
+        }
+      }
+    });
+
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        error: 'Transacción no encontrada',
+        message: 'La transacción especificada no existe',
+        code: 'TRANSACTION_NOT_FOUND'
+      });
+    }
+
+    res.json({
+      success: true,
+      transaction: {
+        id: transaction.id,
+        paymentId: transaction.payment.orderId,
+        amount: parseFloat(transaction.amount),
+        currency: transaction.currency,
+        exchangeRate: parseFloat(transaction.exchangeRate),
+        finalAmount: parseFloat(transaction.finalAmount),
+        finalCurrency: transaction.finalCurrency,
+        status: transaction.status,
+        blockchainTxHash: transaction.blockchainTxHash,
+        confirmationCount: transaction.confirmationCount,
+        requiredConfirmations: transaction.requiredConfirmations,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt
+      },
+      mode: transaction.blockchainTxHash ? 'REAL' : 'SIMULATION'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Obtener estado de una transacción
 router.get('/:transactionId/status', async (req, res, next) => {
   try {

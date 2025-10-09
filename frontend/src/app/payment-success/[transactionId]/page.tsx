@@ -1,145 +1,128 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
-
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { 
-  CheckCircle, 
-  Download, 
-  Share2, 
-  ArrowLeft,
-  Clock,
-  DollarSign,
-  Hash
-} from 'lucide-react'
+import { CheckCircle, ArrowLeft, Copy, ExternalLink, Clock } from 'lucide-react'
+import Link from 'next/link'
+import toast from 'react-hot-toast'
 
-interface Transaction {
-  id: string
-  amount: string | number
+interface TransactionData {
+  transactionId: string
+  paymentId: string
+  amount: number | string
   currency: string
-  exchangeRate: string | number
-  finalAmount: string | number
-  finalCurrency: string
+  cryptoAmount: number | string
+  cryptoCurrency: string
+  exchangeRate: number | string
   status: string
-  blockchainTxHash: string
-  confirmationCount: number
-  createdAt: string
-}
-
-interface Payment {
-  id: string
-  amount: number
-  currency: string
-  concept: string
-  orderId?: string
+  timestamp: string
+  blockchainTxHash?: string
+  mode?: string
 }
 
 export default function PaymentSuccessPage() {
   const params = useParams()
+  const router = useRouter()
   const transactionId = params.transactionId as string
   
-  const [transaction, setTransaction] = useState<Transaction | null>(null)
-  const [payment, setPayment] = useState<Payment | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [transactionData, setTransactionData] = useState<TransactionData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (transactionId) {
-      fetchTransactionDetails()
+      fetchTransactionData(transactionId)
     }
   }, [transactionId])
 
-  const fetchTransactionDetails = async () => {
+  const fetchTransactionData = async (transactionId: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/transactions/${transactionId}/status`)
+      setLoading(true)
+      
+      // Obtener datos reales del backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/transactions/${transactionId}`)
+      
+      if (!response.ok) {
+        throw new Error('Error al obtener datos de la transacción')
+      }
+      
       const data = await response.json()
-
-      if (response.ok) {
-        setTransaction(data.transaction)
-        setPayment(data.payment)
+      
+      if (data.success && data.transaction) {
+        const transaction = data.transaction
+        setTransactionData({
+          transactionId: transaction.id,
+          paymentId: transaction.paymentId,
+          amount: transaction.finalAmount,
+          currency: transaction.finalCurrency,
+          cryptoAmount: transaction.amount,
+          cryptoCurrency: transaction.currency,
+          exchangeRate: transaction.exchangeRate,
+          status: transaction.status,
+          timestamp: transaction.createdAt,
+          blockchainTxHash: transaction.blockchainTxHash,
+          mode: data.mode || 'REAL'
+        })
+      } else {
+        throw new Error('No se encontraron datos de la transacción')
       }
-    } catch (error) {
-      console.error('Error fetching transaction:', error)
+    } catch (err) {
+      console.error('Error fetching transaction data:', err)
+      setError('Error al obtener datos de la transacción')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const downloadReceipt = () => {
-    if (!transaction || !payment) return
-    
-    const receiptData = {
-      transactionId: transaction.id,
-      amount: parseFloat(transaction.amount),
-      currency: transaction.currency,
-      finalAmount: parseFloat(transaction.finalAmount),
-      finalCurrency: transaction.finalCurrency,
-      concept: payment.concept,
-      date: new Date(transaction.createdAt).toLocaleString('es-AR'),
-      txHash: transaction.blockchainTxHash,
-      status: transaction.status
-    }
-
-    const blob = new Blob([JSON.stringify(receiptData, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `recibo-${transaction.id}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text)
+    toast.success(`${label} copiado al portapapeles`)
   }
 
-  const shareReceipt = async () => {
-    if (!transaction || !payment) return
-
-    const shareData = {
-      title: 'Recibo de Pago - MidatoPay',
-      text: `Pago confirmado: ${parseFloat(transaction.amount)} ${transaction.currency} por ${payment.concept}`,
-      url: window.location.href
-    }
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData)
-      } catch (error) {
-        console.log('Error sharing:', error)
-      }
-    } else {
-      // Fallback: copiar al portapapeles
-      navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`)
-    }
+  const formatCurrency = (amount: number | string) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numAmount)
   }
 
-  if (isLoading) {
+  const formatCryptoAmount = (amount: number | string, crypto: string) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
+    return `${numAmount.toFixed(6)} ${crypto}`
+  }
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f7f7f6' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando detalles del pago...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando detalles de la transacción...</p>
         </div>
       </div>
     )
   }
 
-  if (!transaction || !payment) {
+  if (error || !transactionData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Transacción no encontrada</h2>
-            <p className="text-gray-600 mb-4">No se pudo encontrar la transacción solicitada</p>
-            <Button asChild>
-              <Link href="/">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f7f7f6' }}>
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
+              <p className="text-gray-600 mb-6">{error || 'No se pudieron cargar los datos de la transacción'}</p>
+              <Link href="/scan">
+                <Button variant="outline" className="w-full">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver al inicio
+                  Volver al Escáner
+                </Button>
               </Link>
-            </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -149,140 +132,169 @@ export default function PaymentSuccessPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f7f7f6' }}>
       {/* Header */}
-      <header className="shadow-sm border-b" style={{ backgroundColor: '#f7f7f6', borderColor: 'rgba(254,108,28,0.3)' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="shadow-sm border-b" style={{ backgroundColor: '#f7f7f6', borderColor: 'rgba(26,26,26,0.08)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-4">
+            <Link href="/scan" className="mr-4">
+              <Button variant="ghost" size="sm" style={{ color: '#1a1a1a' }}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
+            </Link>
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fe6c1c 0%, #ff8c42 100%)' }}>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-green-500">
                 <CheckCircle className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#fe6c1c' }}>Pago Confirmado</h1>
-                <p className="text-sm" style={{ color: '#5d5d5d' }}>Transacción exitosa</p>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>Pago Exitoso</h1>
+                <p className="text-sm" style={{ color: '#5d5d5d' }}>Tu pago se procesó correctamente</p>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Success Message */}
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-8"
         >
-          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'rgba(254,108,28,0.1)' }}>
-            <CheckCircle className="w-10 h-10" style={{ color: '#fe6c1c' }} />
-          </div>
-          <h2 className="text-3xl font-bold mb-2" style={{ color: '#fe6c1c', fontFamily: 'Gromm, sans-serif' }}>¡Pago Exitoso!</h2>
-          <p className="text-gray-600">
-            Tu pago ha sido procesado y confirmado exitosamente
-          </p>
-        </motion.div>
+          {/* Mensaje de Éxito */}
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Pago Exitoso!</h2>
+                <p className="text-gray-600 mb-4">
+                  Tu pago de {formatCurrency(transactionData.amount)} se procesó correctamente
+                </p>
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  <Clock className="w-4 h-4 mr-1" />
+                  {new Date(transactionData.timestamp).toLocaleString('es-AR')}
+                </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <div className="max-w-2xl mx-auto">
-          {/* Detalles del pago */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-8"
-          >
-            <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
+          {/* Detalles de la Transacción */}
+            <Card>
               <CardHeader>
-                <CardTitle style={{ color: '#fe6c1c' }}>Detalles del Pago</CardTitle>
-                <CardDescription style={{ color: '#5d5d5d' }}>
-                  Información completa de la transacción
+              <CardTitle>Detalles de la Transacción</CardTitle>
+                <CardDescription>
+                Información completa de tu pago
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+              {/* Monto Pagado */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="font-medium text-blue-900 mb-2">Monto Pagado</h3>
+                <p className="text-2xl font-bold text-blue-900">{formatCurrency(transactionData.amount)}</p>
+                <p className="text-sm text-blue-700">Pagado en pesos argentinos</p>
+              </div>
+
+              {/* Crypto Enviado */}
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h3 className="font-medium text-green-900 mb-2">Crypto Enviado al Comercio</h3>
+                <p className="text-xl font-semibold text-green-900">
+                  {formatCryptoAmount(transactionData.cryptoAmount, transactionData.cryptoCurrency)}
+                </p>
+                <p className="text-sm text-green-700">
+                  Tasa utilizada: 1 {transactionData.cryptoCurrency} = {formatCurrency(transactionData.exchangeRate)}
+                </p>
+              </div>
+
+              {/* Información Técnica */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Concepto:</span>
-                  <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.concept}</span>
+                  <span className="text-sm text-gray-600">ID de Transacción:</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-mono text-gray-900">{transactionData.transactionId}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(transactionData.transactionId, 'ID de Transacción')}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
                 
-                {payment.orderId && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">ID de Pago:</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-mono text-gray-900">{transactionData.paymentId}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(transactionData.paymentId, 'ID de Pago')}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+
+                {transactionData.blockchainTxHash && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm" style={{ color: '#5d5d5d' }}>Orden:</span>
-                    <span className="font-medium" style={{ color: '#1a1a1a' }}>{payment.orderId}</span>
+                    <span className="text-sm text-gray-600">Hash de Blockchain:</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-mono text-gray-900 truncate max-w-32">
+                        {transactionData.blockchainTxHash}
+                      </span>
+                  <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyToClipboard(transactionData.blockchainTxHash!, 'Hash de Blockchain')}
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 )}
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Monto pagado:</span>
-                  <span className="font-bold text-lg" style={{ color: '#1a1a1a' }}>
-                    ${parseFloat(transaction.amount)} ARS
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Recibido por comercio:</span>
-                  <span className="font-bold text-lg" style={{ color: '#1a1a1a' }}>
-                    ${parseFloat(transaction.finalAmount)} ARS
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Estado:</span>
-                  <Badge variant="success">
-                    {transaction.status === 'CONFIRMED' ? 'Confirmado' : transaction.status}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: '#5d5d5d' }}>Fecha:</span>
-                  <span className="font-medium" style={{ color: '#1a1a1a' }}>
-                    {new Date(transaction.createdAt).toLocaleString('es-AR')}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
 
-          {/* Acciones */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
-              <CardHeader>
-                <CardTitle className="text-lg" style={{ color: '#fe6c1c' }}>Acciones</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Button
-                    onClick={downloadReceipt}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Descargar Recibo
-                  </Button>
-                  
-                  <Button
-                    onClick={shareReceipt}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Compartir Recibo
-                  </Button>
-                  
-                  <Button asChild className="w-full">
-                    <Link href="/">
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Volver al Inicio
-                    </Link>
-                  </Button>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Estado:</span>
+                  <span className="text-sm font-medium text-green-600 capitalize">{transactionData.status}</span>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              </div>
+
+              {/* Botones de Acción */}
+              <div className="pt-4 space-y-3">
+                <Link href="/scan" className="block">
+                  <Button variant="outline" className="w-full">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Realizar Otro Pago
+                  </Button>
+                </Link>
+                  
+                {transactionData.blockchainTxHash && (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      // Usar URL de Sepolia Voyager en lugar de Starkscan Mainnet
+                      const explorerUrl = `https://sepolia.voyager.online/tx/${transactionData.blockchainTxHash}`;
+                      window.open(explorerUrl, '_blank');
+                    }}
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    {transactionData.mode === 'SIMULATION' 
+                      ? 'Ver en Blockchain (Simulación)' 
+                      : 'Ver en Blockchain (Sepolia)'}
+                  </Button>
+                )}
         </div>
 
+              {/* Información Adicional */}
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <h4 className="font-medium text-yellow-900 mb-2">📧 Recibo por Email</h4>
+                <p className="text-sm text-yellow-800">
+                  Te hemos enviado un recibo por email con todos los detalles de esta transacción.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   )

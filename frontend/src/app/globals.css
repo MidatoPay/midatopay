@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fuente personalizada Kufam */
+@font-face {
+  font-family: 'Kufam';
+  src: url('/fonts/kufam.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Fuente personalizada Boeing */
 @font-face {
   font-family: 'Boeing';

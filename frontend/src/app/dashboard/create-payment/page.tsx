@@ -7,15 +7,20 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import toast from 'react-hot-toast'
-// import { useAegis } from '@cavos/aegis'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/store/auth'
-import { ArrowLeft, QrCode, DollarSign, FileText, Hash, X, Copy, Download } from 'lucide-react'
+import { ArrowLeft, QrCode, DollarSign, FileText, Hash } from 'lucide-react'
 import Link from 'next/link'
+
+// Importar nuestros nuevos componentes y hooks
+import { midatoPayAPI } from '@/lib/midatopay-api'
+import { useCryptoConversion } from '@/hooks/useCryptoConversion'
+import { ConversionPreview } from '@/components/ConversionPreview'
+import { QRModal } from '@/components/QRModal'
 
 const createPaymentSchema = z.object({
   amount: z.number().min(1, 'El monto debe ser mayor a 0'),
@@ -30,10 +35,12 @@ export default function CreatePaymentPage() {
   const { user, isAuthenticated } = useAuth()
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(false)
-  const [createdPayment, setCreatedPayment] = useState<any>(null)
   const [showQRModal, setShowQRModal] = useState(false)
-  const [qrCountdown, setQrCountdown] = useState(0)
-  const [isGeneratingQR, setIsGeneratingQR] = useState(false)
+  const [qrData, setQrData] = useState<any>(null)
+  const [refreshingQR, setRefreshingQR] = useState(false)
+
+  // Hook para conversiones crypto
+  const { convertARSToCrypto, loading: conversionLoading } = useCryptoConversion()
 
   const {
     register,
@@ -54,77 +61,9 @@ export default function CreatePaymentPage() {
   const watchedConcept = watch('concept')
   const watchedReceiveCurrency = watch('receiveCurrency')
 
-  // Función para calcular la conversión de ARS a criptomoneda
-  const getConversionRate = (currency: string) => {
-    const rates: { [key: string]: number } = {
-      'USDT': 1380, // 1 USDT = 1380 ARS
-      'BTC': 0.000023, // 1 BTC = ~58,000,000 ARS (aproximado)
-      'ETH': 0.00036, // 1 ETH = ~3,800,000 ARS (aproximado)
-      'STRK': 122, // 1 STRK = ~122 ARS (aproximado)
-    }
-    return rates[currency] || 1380
-  }
+  // Calcular conversión usando nuestro hook
+  const conversionResult = convertARSToCrypto(watchedAmount, watchedReceiveCurrency)
 
-  const getConvertedAmount = (amount: any, currency: string) => {
-    // Validar que amount sea un número válido y positivo
-    const numAmount = Number(amount)
-    if (!amount || amount === '' || isNaN(numAmount) || numAmount <= 0) {
-      return null
-    }
-    
-    const rate = getConversionRate(currency)
-    if (currency === 'BTC' || currency === 'ETH') {
-      return (numAmount / rate).toFixed(8)
-    } else if (currency === 'STRK') {
-      return (numAmount / rate).toFixed(6)
-    }
-    return (numAmount / rate).toFixed(2)
-  }
-
-  // Función para iniciar el countdown del QR
-  const startQRCountdown = () => {
-    setQrCountdown(30)
-    setIsGeneratingQR(true)
-    
-    const interval = setInterval(() => {
-      setQrCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          setIsGeneratingQR(false)
-          generateNewQR()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-  }
-
-  // Función para generar nuevo QR
-  const generateNewQR = async () => {
-    if (!createdPayment) return
-    
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/regenerate-qr`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state.token : ''}`,
-        },
-        body: JSON.stringify({ paymentId: createdPayment.id }),
-      })
-
-      const result = await response.json()
-      if (response.ok) {
-        setCreatedPayment(result.payment)
-        // Reiniciar el countdown después de mostrar el nuevo QR
-        setTimeout(() => {
-          startQRCountdown()
-        }, 1000)
-      }
-    } catch (error) {
-      console.error('Error regenerating QR:', error)
-    }
-  }
 
   const onSubmit = async (data: CreatePaymentForm) => {
     if (!isAuthenticated) {
@@ -134,39 +73,21 @@ export default function CreatePaymentPage() {
 
     setIsCreating(true)
     try {
-      // Preparar datos con información de conversión
-      const paymentData = {
-        ...data,
-        amountARS: data.amount, // Monto original en ARS
-        receiveAmount: getConvertedAmount(data.amount, data.receiveCurrency), // Monto convertido
-        receiveCurrency: data.receiveCurrency,
-        conversionRate: getConversionRate(data.receiveCurrency)
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state.token : ''}`,
-        },
-        body: JSON.stringify(paymentData),
+      // Generar QR usando nuestro nuevo API
+      const result = await midatoPayAPI.generatePaymentQR({
+        amountARS: data.amount,
+        targetCrypto: data.receiveCurrency
       })
 
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Error al crear el pago')
+      if (result.success) {
+        setQrData(result)
+        setShowQRModal(true)
+        toast.success('¡QR generado exitosamente!')
+      } else {
+        throw new Error(result.error || 'Error al generar QR')
       }
-
-      setCreatedPayment(result.payment)
-      setShowQRModal(true)
-      // Iniciar countdown después de mostrar el QR
-      setTimeout(() => {
-        startQRCountdown()
-      }, 1000)
-      toast.success('¡Pago creado exitosamente!')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error al crear el pago')
+      toast.error(error instanceof Error ? error.message : 'Error al generar QR')
     } finally {
       setIsCreating(false)
     }
@@ -194,7 +115,7 @@ export default function CreatePaymentPage() {
                 <QrCode className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>Crear Pago</h1>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Kufam, sans-serif', color: '#1a1a1a' }}>Crear Pago</h1>
                 <p className="text-sm" style={{ color: '#5d5d5d' }}>Genera códigos QR para tus ventas</p>
               </div>
             </div>
@@ -212,7 +133,7 @@ export default function CreatePaymentPage() {
           >
             <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>Detalles del Pago</CardTitle>
+                <CardTitle style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif' }}>Detalles del Pago</CardTitle>
                 <CardDescription style={{ color: '#5d5d5d' }}>
                   Completa la información para generar el código QR
                 </CardDescription>
@@ -307,11 +228,25 @@ export default function CreatePaymentPage() {
                           color: '#1a1a1a'
                         }}
                       >
-                        <option value="USDT">USDT (Tether)</option>
+                        <option value="STRK">Starknet (STRK) - Recomendado</option>
+                        <option value="USDT">USDT (Tether) - Solo Mainnet</option>
                         <option value="BTC">Bitcoin (BTC)</option>
                         <option value="ETH">Ethereum (ETH)</option>
-                        <option value="STRK">Starknet (STRK)</option>
                       </select>
+                      
+                      {/* Advertencia para USDT */}
+                      {watchedReceiveCurrency === 'USDT' && (
+                        <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <div className="flex items-center">
+                            <div className="w-4 h-4 text-yellow-600 mr-2">⚠️</div>
+                            <p className="text-sm text-yellow-800">
+                              <strong>Advertencia:</strong> USDT no está disponible en Starknet Sepolia. 
+                              Se cambiará automáticamente a STRK.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
                       {/* Logo de la criptomoneda seleccionada */}
                       <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                         {watchedReceiveCurrency === 'USDT' && (
@@ -365,16 +300,12 @@ export default function CreatePaymentPage() {
                         </svg>
                       </div>
                     </div>
-                    {getConvertedAmount(watchedAmount, watchedReceiveCurrency) && (
-                      <div className="mt-2 p-3 rounded-lg" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                        <p className="text-sm" style={{ color: '#10b981' }}>
-                          <span className="font-semibold">Recibirás:</span> {getConvertedAmount(watchedAmount, watchedReceiveCurrency)} {watchedReceiveCurrency}
-                        </p>
-                        <p className="text-xs mt-1" style={{ color: '#5d5d5d' }}>
-                          Tipo de cambio: 1 {watchedReceiveCurrency} = {getConversionRate(watchedReceiveCurrency).toLocaleString()} ARS
-                        </p>
-                      </div>
-                    )}
+                    <ConversionPreview
+                      amountARS={watchedAmount}
+                      targetCrypto={watchedReceiveCurrency}
+                      conversionResult={conversionResult}
+                      loading={conversionLoading}
+                    />
                   </div>
 
                   {/* Botón de envío */}
@@ -386,7 +317,7 @@ export default function CreatePaymentPage() {
                       backgroundColor: '#fe6c1c', 
                       color: '#ffffff', 
                       border: 'none',
-                      fontFamily: 'Gromm, sans-serif'
+                      fontFamily: 'Kufam, sans-serif'
                     }}
                   >
                     {isCreating ? 'Creando pago...' : 'Crear Pago'}
@@ -406,7 +337,7 @@ export default function CreatePaymentPage() {
             {/* Preview del pago */}
             <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>Vista Previa</CardTitle>
+                <CardTitle style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif' }}>Vista Previa</CardTitle>
                 <CardDescription style={{ color: '#5d5d5d' }}>
                   Así se verá el pago para tus clientes
                 </CardDescription>
@@ -435,7 +366,7 @@ export default function CreatePaymentPage() {
             {/* Información adicional */}
             <Card style={{ backgroundColor: 'rgba(247, 247, 246, 0.15)', borderColor: 'rgba(254,108,28,0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)' }}>
               <CardHeader>
-                <CardTitle className="text-sm" style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>Informacion del Pago</CardTitle>
+                <CardTitle className="text-sm" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif' }}>Informacion del Pago</CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-3" style={{ color: '#5d5d5d' }}>
                 <div className="flex items-center space-x-2">
@@ -465,127 +396,32 @@ export default function CreatePaymentPage() {
       </div>
 
       {/* Modal QR Code */}
-      {showQRModal && createdPayment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
-            style={{ backgroundColor: '#ffffff', boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }}
-          >
-            {/* Header del modal */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' }}>
-                  <QrCode className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold" style={{ color: '#1a1a1a', fontFamily: 'Gromm, sans-serif' }}>¡Pago Creado!</h2>
-                  <p className="text-sm" style={{ color: '#5d5d5d' }}>Comparte este código QR</p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowQRModal(false)}
-                className="p-2"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-
-            {/* Contenido del QR */}
-            <div className="text-center space-y-6">
-              {/* QR Code */}
-              <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-200">
-                <img
-                  src={createdPayment.qrCode}
-                  alt="QR Code del pago"
-                  className="w-64 h-64 mx-auto"
-                />
-                {qrCountdown > 0 && (
-                  <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(254, 108, 28, 0.1)', border: '1px solid rgba(254, 108, 28, 0.2)' }}>
-                    <p className="text-sm" style={{ color: '#fe6c1c' }}>
-                      <span className="font-semibold">QR se renovará en:</span> {qrCountdown} segundos
-                    </p>
-                  </div>
-                )}
-                {isGeneratingQR && (
-                  <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(254, 108, 28, 0.1)', border: '1px solid rgba(254, 108, 28, 0.2)' }}>
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 rounded-full border-2 border-orange-200 border-t-orange-500 animate-spin"></div>
-                      <p className="text-sm" style={{ color: '#fe6c1c' }}>
-                        Generando nuevo QR...
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              {/* Información del pago (lo que ve el cliente) */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold" style={{ color: '#1a1a1a' }}>
-                  {createdPayment.concept}
-                </h3>
-                <p className="text-2xl font-bold" style={{ color: '#1a1a1a' }}>
-                  ${createdPayment.amountARS || createdPayment.amount} ARS
-                </p>
-                {createdPayment.orderId && (
-                  <p className="text-sm" style={{ color: '#5d5d5d' }}>
-                    Orden: {createdPayment.orderId}
-                  </p>
-                )}
-              </div>
-
-
-              {/* Botones de acción */}
-              <div className="flex space-x-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl"
-                  onClick={() => {
-                    navigator.clipboard.writeText(createdPayment.qrCode)
-                    toast.success('QR copiado al portapapeles')
-                  }}
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copiar QR
-                </Button>
-                <Button
-                  className="flex-1 h-12 rounded-xl"
-                  style={{ backgroundColor: '#fe6c1c', color: '#ffffff' }}
-                  onClick={() => {
-                    const link = document.createElement('a')
-                    link.href = createdPayment.qrCode
-                    link.download = `pago-${createdPayment.id}.png`
-                    link.click()
-                    toast.success('QR descargado')
-                  }}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Descargar
-                </Button>
-              </div>
-
-              {/* Información adicional */}
-              <div className="text-xs space-y-1" style={{ color: '#5d5d5d' }}>
-                <p>Expira: {new Date(createdPayment.expiresAt).toLocaleString('es-AR')}</p>
-                <p>ID: {createdPayment.id}</p>
-              </div>
-
-              {/* Botón cerrar */}
-              <Button
-                variant="outline"
-                className="w-full h-12 rounded-xl"
-                onClick={() => setShowQRModal(false)}
-              >
-                Cerrar
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+      <QRModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        qrData={qrData}
+        onRefreshQR={async () => {
+          if (!qrData?.paymentData) return
+          
+          setRefreshingQR(true)
+          try {
+            const result = await midatoPayAPI.generatePaymentQR({
+              amountARS: qrData.paymentData.amountARS,
+              targetCrypto: qrData.paymentData.targetCrypto
+            })
+            
+            if (result.success) {
+              setQrData(result)
+              toast.success('QR actualizado')
+            }
+          } catch (error) {
+            toast.error('Error al actualizar QR')
+          } finally {
+            setRefreshingQR(false)
+          }
+        }}
+        refreshing={refreshingQR}
+      />
     </div>
   )
 }

@@ -32,7 +32,7 @@ router.get('/price/:currency', async (req, res, next) => {
 router.get('/prices', async (req, res, next) => {
   try {
     const { baseCurrency = 'ARS' } = req.query;
-    const currencies = ['USDT', 'BTC', 'ETH'];
+    const currencies = ['USDT', 'BTC', 'ETH', 'STRK'];
     
     const prices = {};
     

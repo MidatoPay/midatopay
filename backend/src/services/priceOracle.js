@@ -12,7 +12,8 @@ const CACHE_DURATION = 30 * 1000; // 30 segundos
 
 // Precios de fallback para cuando las APIs externas no estén disponibles
 const FALLBACK_PRICES = {
-  'USDT_ARS': 380,  // Precio aproximado de USDT en ARS
+  'USDT_ARS': 800,  // Precio aproximado de USDT en ARS (actualizado)
+  'STRK_ARS': 200,  // Precio aproximado de STRK en ARS
   'BTC_ARS': 15000000,  // Precio aproximado de BTC en ARS
   'ETH_ARS': 4500000   // Precio aproximado de ETH en ARS
 };
@@ -55,6 +56,37 @@ async function getRipioPrice(currency, baseCurrency = 'ARS') {
   }
 }
 
+// Función para obtener precio desde Criptoya
+async function getCriptoyaPrice(currency, baseCurrency = 'ARS') {
+  try {
+    const response = await axios.get(`https://criptoya.com/api/ripio/${currency}/${baseCurrency}/0.1`, {
+      timeout: 5000,
+      headers: {
+        'User-Agent': 'MidatoPay/1.0'
+      }
+    });
+
+    const data = response.data;
+    
+    // Criptoya devuelve ask (precio de venta) y bid (precio de compra)
+    // Usamos el precio promedio para ser justos
+    const averagePrice = (data.ask + data.bid) / 2;
+    
+    return {
+      price: averagePrice,
+      source: 'CRIPTOYA',
+      timestamp: new Date(),
+      ask: data.ask,
+      bid: data.bid,
+      totalAsk: data.totalAsk,
+      totalBid: data.totalBid
+    };
+  } catch (error) {
+    console.error('Error obteniendo precio de Criptoya:', error.message);
+    throw error;
+  }
+}
+
 // Función para obtener precio desde Binance
 async function getBinancePrice(currency, baseCurrency = 'ARS') {
   try {
@@ -65,6 +97,23 @@ async function getBinancePrice(currency, baseCurrency = 'ARS') {
     });
     
     const usdtArsRate = parseFloat(usdtArsResponse.data.price);
+    
+    // Manejo especial para STRK - usar precio de fallback si no está disponible en Binance
+    if (currency === 'STRK') {
+      const fallbackKey = `${currency}_${baseCurrency}`;
+      const fallbackPrice = FALLBACK_PRICES[fallbackKey];
+      
+      if (fallbackPrice) {
+        console.log(`⚠️ STRK no disponible en Binance, usando precio de fallback: $${fallbackPrice}`);
+        return {
+          price: fallbackPrice,
+          source: 'BINANCE_FALLBACK',
+          timestamp: new Date(),
+          usdtArsRate,
+          cryptoUsdtRate: fallbackPrice / usdtArsRate
+        };
+      }
+    }
     
     // Obtener precio de la crypto en USDT
     const cryptoUsdtResponse = await axios.get(`${BINANCE_API_BASE}/ticker/price?symbol=${currency}USDT`, {
@@ -85,6 +134,24 @@ async function getBinancePrice(currency, baseCurrency = 'ARS') {
     };
   } catch (error) {
     console.error('Error obteniendo precio de Binance:', error.message);
+    
+    // Si es STRK y falla, usar precio de fallback
+    if (currency === 'STRK') {
+      const fallbackKey = `${currency}_${baseCurrency}`;
+      const fallbackPrice = FALLBACK_PRICES[fallbackKey];
+      
+      if (fallbackPrice) {
+        console.log(`⚠️ STRK fallback por error en Binance: $${fallbackPrice}`);
+        return {
+          price: fallbackPrice,
+          source: 'BINANCE_FALLBACK',
+          timestamp: new Date(),
+          usdtArsRate: 1,
+          cryptoUsdtRate: fallbackPrice
+        };
+      }
+    }
+    
     throw error;
   }
 }
@@ -102,8 +169,18 @@ async function getCurrentPrice(currency, baseCurrency = 'ARS') {
   const prices = [];
   
   try {
-    // Obtener precio de Ripio
+    // Obtener precio de Criptoya (Ripio) - Solo para USDT, BTC, ETH
     if (currency === 'USDT' || currency === 'BTC' || currency === 'ETH') {
+      const criptoyaPrice = await getCriptoyaPrice(currency, baseCurrency);
+      prices.push(criptoyaPrice);
+    }
+  } catch (error) {
+    console.warn('No se pudo obtener precio de Criptoya:', error.message);
+  }
+
+  try {
+    // Obtener precio de Ripio (fallback)
+    if (currency === 'USDT' || currency === 'STRK' || currency === 'BTC' || currency === 'ETH') {
       const ripioPrice = await getRipioPrice(currency, baseCurrency);
       prices.push(ripioPrice);
     }
@@ -112,8 +189,8 @@ async function getCurrentPrice(currency, baseCurrency = 'ARS') {
   }
 
   try {
-    // Obtener precio de Binance
-    if (currency === 'USDT' || currency === 'BTC' || currency === 'ETH') {
+    // Obtener precio de Binance (fallback)
+    if (currency === 'USDT' || currency === 'STRK' || currency === 'BTC' || currency === 'ETH') {
       const binancePrice = await getBinancePrice(currency, baseCurrency);
       prices.push(binancePrice);
     }
@@ -179,18 +256,22 @@ async function getCurrentPrice(currency, baseCurrency = 'ARS') {
   // Actualizar cache
   priceCache.set(cacheKey, bestPrice);
   
-  // Guardar en base de datos
-  try {
-    await prisma.priceOracle.create({
-      data: {
-        currency,
-        baseCurrency,
-        price: bestPrice.price,
-        source: bestPrice.source
-      }
-    });
-  } catch (error) {
-    console.warn('Error guardando precio en BD:', error.message);
+  // Guardar en base de datos (solo si el precio es válido)
+  if (bestPrice.price && !isNaN(bestPrice.price) && bestPrice.price > 0) {
+    try {
+      await prisma.priceOracle.create({
+        data: {
+          currency,
+          baseCurrency,
+          price: bestPrice.price,
+          source: bestPrice.source
+        }
+      });
+    } catch (error) {
+      console.warn('Error guardando precio en BD:', error.message);
+    }
+  } else {
+    console.warn(`Precio inválido para ${currency}/${baseCurrency}: ${bestPrice.price}`);
   }
 
   return bestPrice;
@@ -232,7 +313,7 @@ async function getAveragePrice(currency, baseCurrency = 'ARS') {
 async function updatePrices() {
   console.log('🔄 Actualizando precios...');
   
-  const currencies = ['USDT', 'BTC', 'ETH'];
+  const currencies = ['USDT', 'STRK', 'BTC', 'ETH'];
   
   for (const currency of currencies) {
     try {
@@ -282,6 +363,73 @@ async function getPriceHistory(currency, baseCurrency = 'ARS', hours = 24) {
   return prices;
 }
 
+// Función específica para conversión ARS → Crypto (MidatoPay)
+async function convertARSToCrypto(amountARS, targetCrypto) {
+  try {
+    const priceData = await getCurrentPrice(targetCrypto, 'ARS');
+    const cryptoAmount = amountARS / priceData.price;
+    
+    return {
+      amountARS,
+      targetCrypto,
+      cryptoAmount,
+      exchangeRate: priceData.price,
+      source: priceData.source,
+      timestamp: priceData.timestamp,
+      // Agregar margen de seguridad del 2%
+      cryptoAmountWithMargin: cryptoAmount * 0.98
+    };
+  } catch (error) {
+    console.error(`Error convirtiendo ${amountARS} ARS a ${targetCrypto}:`, error.message);
+    throw error;
+  }
+}
+
+// Función para obtener rate con margen de seguridad
+async function getExchangeRateWithMargin(targetCrypto, marginPercent = 2) {
+  try {
+    const priceData = await getCurrentPrice(targetCrypto, 'ARS');
+    const margin = marginPercent / 100;
+    
+    return {
+      baseRate: priceData.price,
+      rateWithMargin: priceData.price * (1 + margin),
+      marginPercent,
+      targetCrypto,
+      source: priceData.source,
+      timestamp: priceData.timestamp
+    };
+  } catch (error) {
+    console.error(`Error obteniendo rate con margen para ${targetCrypto}:`, error.message);
+    throw error;
+  }
+}
+
+// Función para validar si un rate está dentro del rango aceptable
+async function validateExchangeRate(targetCrypto, expectedRate, tolerancePercent = 5) {
+  try {
+    const currentRate = await getCurrentPrice(targetCrypto, 'ARS');
+    const tolerance = tolerancePercent / 100;
+    const minRate = expectedRate * (1 - tolerance);
+    const maxRate = expectedRate * (1 + tolerance);
+    
+    const isValid = currentRate.price >= minRate && currentRate.price <= maxRate;
+    
+    return {
+      isValid,
+      currentRate: currentRate.price,
+      expectedRate,
+      tolerancePercent,
+      minRate,
+      maxRate,
+      deviation: Math.abs(currentRate.price - expectedRate) / expectedRate * 100
+    };
+  } catch (error) {
+    console.error(`Error validando rate para ${targetCrypto}:`, error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   getCurrentPrice,
   getAveragePrice,
@@ -289,5 +437,8 @@ module.exports = {
   getBinancePrice,
   startPriceOracle,
   getPriceHistory,
-  updatePrices
+  updatePrices,
+  convertARSToCrypto,
+  getExchangeRateWithMargin,
+  validateExchangeRate
 };

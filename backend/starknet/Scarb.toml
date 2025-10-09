@@ -6,6 +6,12 @@ edition = "2023_11"
 [dependencies]
 starknet = "2.12.2"
 
+# OpenZeppelin (usando repo local)
+openzeppelin_access = { path = "../../cairo-contracts/packages/access" }
+openzeppelin_introspection = { path = "../../cairo-contracts/packages/introspection" }
+openzeppelin_security = { path = "../../cairo-contracts/packages/security" }
+openzeppelin_token = { path = "../../cairo-contracts/packages/token" }
+
 [[target.starknet-contract]]
 sierra = true
 casm = true
