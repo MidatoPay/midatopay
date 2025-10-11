@@ -39,25 +39,13 @@ async function main() {
 
   console.log('✅ Usuario comercio creado:', merchant.email);
 
-  // Crear precios de ejemplo
+  // Crear precios de ejemplo - SOLO ORACLE DE STARKNET
   const prices = [
     {
       currency: 'USDT',
       baseCurrency: 'ARS',
       price: 375.50,
-      source: 'RIPIO'
-    },
-    {
-      currency: 'BTC',
-      baseCurrency: 'ARS',
-      price: 15000000,
-      source: 'BINANCE'
-    },
-    {
-      currency: 'ETH',
-      baseCurrency: 'ARS',
-      price: 2500000,
-      source: 'BINANCE'
+      source: 'STARKNET_ORACLE'
     }
   ];
 

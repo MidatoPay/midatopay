@@ -1,1 +1,0 @@
-{"version":1,"contracts":[{"id":"s9mok8fdmll0a","package_name":"midatopay_starknet","contract_name":"PaymentGateway","module_path":"midatopay_starknet::payment_gateway::PaymentGateway","artifacts":{"sierra":"midatopay_starknet_PaymentGateway.contract_class.json","casm":"midatopay_starknet_PaymentGateway.compiled_contract_class.json"}}]}

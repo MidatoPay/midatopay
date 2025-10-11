@@ -1,181 +1,159 @@
 const express = require('express');
-const { getCurrentPrice, getAveragePrice, getPriceHistory } = require('../services/priceOracle');
-
 const router = express.Router();
+const priceOracle = require('../services/priceOracle');
 
-// Obtener precio actual de una criptomoneda
-router.get('/price/:currency', async (req, res, next) => {
+// Endpoint para obtener cotización ARS → USDT del Oracle
+router.get('/quote/:amount', async (req, res) => {
   try {
-    const { currency } = req.params;
-    const { baseCurrency = 'ARS' } = req.query;
+    const amountARS = parseFloat(req.params.amount);
+    
+    if (isNaN(amountARS) || amountARS <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Amount must be a positive number'
+      });
+    }
 
-    const price = await getCurrentPrice(currency.toUpperCase(), baseCurrency.toUpperCase());
-
+    console.log(`🔍 Obteniendo cotización para ${amountARS} ARS...`);
+    
+    const conversion = await priceOracle.convertARSToCrypto(amountARS, 'USDT');
+    
     res.json({
-      currency: currency.toUpperCase(),
-      baseCurrency: baseCurrency.toUpperCase(),
-      price: price.price,
-      source: price.source,
-      timestamp: price.timestamp,
-      validFor: 30 // segundos
+      success: true,
+      data: {
+        amountARS,
+        targetCrypto: 'USDT',
+        cryptoAmount: conversion.cryptoAmount,
+        exchangeRate: conversion.exchangeRate,
+        source: conversion.source,
+        timestamp: conversion.timestamp,
+        oracleAddress: conversion.oracleAddress || null,
+        cryptoAmountWithMargin: conversion.cryptoAmountWithMargin
+      }
     });
   } catch (error) {
+    console.error('Error obteniendo cotización:', error.message);
     res.status(500).json({
-      error: 'Error obteniendo precio',
-      message: error.message,
-      code: 'PRICE_ERROR'
+      success: false,
+      error: error.message
     });
   }
 });
 
-// Obtener precios de múltiples criptomonedas
-router.get('/prices', async (req, res, next) => {
+// Endpoint para obtener el rate actual del Oracle
+router.get('/rate', async (req, res) => {
   try {
-    const { baseCurrency = 'ARS' } = req.query;
-    const currencies = ['USDT', 'BTC', 'ETH', 'STRK'];
+    console.log('🔍 Obteniendo rate actual del Oracle...');
     
-    const prices = {};
+    const priceData = await priceOracle.getCurrentPrice('USDT', 'ARS');
     
-    for (const currency of currencies) {
+    res.json({
+      success: true,
+      data: {
+        rate: priceData.price,
+        source: priceData.source,
+        timestamp: priceData.timestamp,
+        oracleAddress: priceData.oracleAddress || null,
+        usdtAmount: priceData.usdtAmount || null
+      }
+    });
+  } catch (error) {
+    console.error('Error obteniendo rate:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Endpoint para verificar estado del Oracle
+router.get('/status', async (req, res) => {
+  try {
+    console.log('🔍 Verificando estado del Oracle...');
+    
+    const status = await priceOracle.getOracleStatus();
+    
+    res.json({
+      success: true,
+      data: status
+    });
+  } catch (error) {
+    console.error('Error verificando estado del Oracle:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Endpoint para obtener balance USDT de una cuenta
+router.get('/balance/:address', async (req, res) => {
+  try {
+    const accountAddress = req.params.address;
+    
+    if (!accountAddress || accountAddress.length < 10) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid account address'
+      });
+    }
+
+    console.log(`🔍 Obteniendo balance USDT para ${accountAddress}...`);
+    
+    const balance = await priceOracle.getUSDTBalance(accountAddress);
+    
+    res.json({
+      success: true,
+      data: balance
+    });
+  } catch (error) {
+    console.error('Error obteniendo balance USDT:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Endpoint para probar el Oracle con diferentes montos
+router.get('/test', async (req, res) => {
+  try {
+    console.log('🧪 Probando Oracle con diferentes montos...');
+    
+    const testAmounts = [1, 10, 100, 1000, 10000];
+    const results = [];
+    
+    for (const amount of testAmounts) {
       try {
-        const price = await getCurrentPrice(currency, baseCurrency.toUpperCase());
-        prices[currency] = {
-          price: price.price,
-          source: price.source,
-          timestamp: price.timestamp
-        };
+        const conversion = await priceOracle.convertARSToCrypto(amount, 'USDT');
+        results.push({
+          amountARS: amount,
+          usdtAmount: conversion.cryptoAmount,
+          rate: conversion.exchangeRate,
+          source: conversion.source,
+          success: true
+        });
       } catch (error) {
-        console.warn(`Error obteniendo precio de ${currency}:`, error.message);
-        prices[currency] = {
-          error: 'Precio no disponible',
-          message: error.message
-        };
+        results.push({
+          amountARS: amount,
+          error: error.message,
+          success: false
+        });
       }
     }
-
+    
     res.json({
-      baseCurrency: baseCurrency.toUpperCase(),
-      prices,
-      timestamp: new Date()
+      success: true,
+      data: {
+        testResults: results,
+        timestamp: new Date()
+      }
     });
   } catch (error) {
+    console.error('Error probando Oracle:', error.message);
     res.status(500).json({
-      error: 'Error obteniendo precios',
-      message: error.message,
-      code: 'PRICES_ERROR'
-    });
-  }
-});
-
-// Obtener precio promedio de múltiples fuentes
-router.get('/average/:currency', async (req, res, next) => {
-  try {
-    const { currency } = req.params;
-    const { baseCurrency = 'ARS' } = req.query;
-
-    const averagePrice = await getAveragePrice(currency.toUpperCase(), baseCurrency.toUpperCase());
-
-    res.json({
-      currency: currency.toUpperCase(),
-      baseCurrency: baseCurrency.toUpperCase(),
-      averagePrice: averagePrice.price,
-      source: averagePrice.source,
-      sources: averagePrice.sources,
-      timestamp: averagePrice.timestamp
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Error obteniendo precio promedio',
-      message: error.message,
-      code: 'AVERAGE_PRICE_ERROR'
-    });
-  }
-});
-
-// Obtener historial de precios
-router.get('/history/:currency', async (req, res, next) => {
-  try {
-    const { currency } = req.params;
-    const { baseCurrency = 'ARS', hours = 24 } = req.query;
-
-    const history = await getPriceHistory(
-      currency.toUpperCase(), 
-      baseCurrency.toUpperCase(), 
-      parseInt(hours)
-    );
-
-    res.json({
-      currency: currency.toUpperCase(),
-      baseCurrency: baseCurrency.toUpperCase(),
-      hours: parseInt(hours),
-      history: history.map(price => ({
-        price: price.price,
-        source: price.source,
-        timestamp: price.timestamp
-      }))
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Error obteniendo historial',
-      message: error.message,
-      code: 'HISTORY_ERROR'
-    });
-  }
-});
-
-// Endpoint para calcular conversión
-router.post('/convert', async (req, res, next) => {
-  try {
-    const { amount, fromCurrency, toCurrency } = req.body;
-
-    if (!amount || !fromCurrency || !toCurrency) {
-      return res.status(400).json({
-        error: 'Datos requeridos',
-        message: 'amount, fromCurrency y toCurrency son requeridos',
-        code: 'MISSING_PARAMETERS'
-      });
-    }
-
-    const numericAmount = parseFloat(amount);
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      return res.status(400).json({
-        error: 'Monto inválido',
-        message: 'El monto debe ser un número positivo',
-        code: 'INVALID_AMOUNT'
-      });
-    }
-
-    let result;
-
-    if (fromCurrency === toCurrency) {
-      result = {
-        amount: numericAmount,
-        convertedAmount: numericAmount,
-        rate: 1,
-        source: 'Directo'
-      };
-    } else {
-      const price = await getCurrentPrice(toCurrency, fromCurrency);
-      const convertedAmount = numericAmount / price.price;
-      
-      result = {
-        amount: numericAmount,
-        convertedAmount: convertedAmount,
-        rate: price.price,
-        source: price.source,
-        timestamp: price.timestamp
-      };
-    }
-
-    res.json({
-      conversion: result,
-      validFor: 30 // segundos
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Error en conversión',
-      message: error.message,
-      code: 'CONVERSION_ERROR'
+      success: false,
+      error: error.message
     });
   }
 });

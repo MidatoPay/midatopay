@@ -19,6 +19,7 @@ import toast from 'react-hot-toast'
 import { AegisProvider, useAegis } from '@cavos/aegis'
 import cavosConfig from '../../../cavos.config'
 import { useTransactions } from '@/hooks/useTransactions'
+import { useUSDTBalance } from '@/hooks/useUSDTBalance'
 
 // Componente interno que usa Cavos
 function DashboardContent() {
@@ -27,6 +28,7 @@ function DashboardContent() {
   const router = useRouter()
   const { aegisAccount, isConnected } = useAegis()
   const { transactions, loading: transactionsLoading, error: transactionsError } = useTransactions()
+  const { balance: usdtBalance, isLoading: usdtBalanceLoading, error: usdtBalanceError } = useUSDTBalance(user?.walletAddress)
   const [stats, setStats] = useState({
     totalPayments: 5,
     pendingPayments: 1,
@@ -256,14 +258,14 @@ function DashboardContent() {
                            <div className="flex-1">
                              <p className="text-base font-medium" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo Total:</p>
                              <p className="text-3xl font-bold" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>
-                               $ {stats.totalAmount.toLocaleString('es-AR')}
+                               $ 0
                              </p>
                            </div>
                   <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4" style={{ color: '#FF6A00' }} fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4" style={{ color: '#8B8B8B' }} fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="font-medium" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>+2.5%</span>
+                    <span className="font-medium" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>--</span>
                   </div>
                 </div>
               </CardContent>
@@ -317,152 +319,27 @@ function DashboardContent() {
                     <div className="grid grid-cols-[1fr_1fr_1fr] gap-16">
                       <div className="text-left">
                         <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>150,00</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Tipo de cambio</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$1.380,00</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Pesos Argentinos</p>
-                        <p className="font-bold text-lg" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$150.450,95</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" style={{ color: '#2ECC71' }} fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="font-medium" style={{ color: '#2ECC71', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>+2.5%</span>
-                    </div>
-              </div>
-              
-              {/* Divider */}
-              <div style={{ height: '1px', backgroundColor: 'rgba(255,106,0,0.2)', margin: '0 0' }}></div>
-              
-              {/* BTC Card */}
-              <div className="flex items-center justify-between" style={{ padding: '16px 0' }}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: '#F7931A' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path fill="#fff" d="M18.763 10.236c.28-1.895-1.155-2.905-3.131-3.591l.64-2.553-1.56-.389-.623 2.49-1.245-.297.631-2.508L11.915 3l-.641 2.562-.992-.234v-.01l-2.157-.54-.415 1.668s1.155.272 1.137.28c.631.163.74.578.722.903l-.722 2.923.162.054-.171-.036-1.02 4.087c-.072.19-.27.478-.712.36.018.028-1.128-.27-1.128-.27l-.776 1.778 2.03.505 1.11.289-.65 2.59 1.56.387.633-2.562 1.253.324-.64 2.554 1.56.388.641-2.59c2.662.505 4.665.308 5.505-2.102.676-1.94-.037-3.05-1.435-3.79 1.02-.225 1.786-.902 1.985-2.282zm-3.564 4.999c-.479 1.94-3.745.884-4.8.63l.857-3.436c1.055.27 4.448.784 3.943 2.796zm.478-5.026c-.433 1.76-3.158.866-4.033.65l.775-3.113c.885.217 3.718.632 3.258 2.463"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <h5 className="font-bold" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>BTC</h5>
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Bitcoin</p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-[1fr_1fr_1fr] gap-16">
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>0,012</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Tipo de cambio</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$187.258.448</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Pesos Argentinos</p>
-                        <p className="font-bold text-lg" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$2.247.101,38</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" style={{ color: '#2ECC71' }} fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="font-medium" style={{ color: '#2ECC71', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>+0.5%</span>
-                    </div>
-                  </div>
-              
-              {/* Divider */}
-              <div style={{ height: '1px', backgroundColor: 'rgba(255,106,0,0.2)', margin: '0 0' }}></div>
-              
-              {/* ETH Card */}
-              <div className="flex items-center justify-between" style={{ padding: '16px 0' }}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: '#627eea' }}>
-                        <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 4v5.912l5 2.236z"/>
-                          <path d="m12 4-5 8.148 5-2.236z"/>
-                          <path d="M12 15.98V20l5-6.92z"/>
-                          <path d="M12 20v-4.02l-5-2.9z"/>
-                          <path d="m12 15.048 5-2.9-5-2.236z"/>
-                          <path d="m7 12.148 5 2.9V9.912z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <h5 className="font-bold" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>ETH</h5>
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Ethereum</p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-[1fr_1fr_1fr] gap-16">
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>0,000</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Tipo de cambio</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$6.873.248,70</p>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Pesos Argentinos</p>
-                        <p className="font-bold text-lg" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$0,00</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" style={{ color: '#2ECC71' }} fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="font-medium" style={{ color: '#2ECC71', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>+1.2%</span>
-                </div>
-              </div>
-              
-              {/* Divider */}
-              <div style={{ height: '1px', backgroundColor: 'rgba(255,106,0,0.2)', margin: '0 0' }}></div>
-              
-              {/* STRK Card */}
-              <div className="flex items-center justify-between" style={{ padding: '16px 0' }}>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: cavosWallet.isConnected ? '#FF6A00' : '#8B8B8B' }}>
-                        <img src="/starknet-logo.png" alt="Starknet" className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h5 className="font-bold" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>STRK</h5>
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Starknet</p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-[1fr_1fr_1fr] gap-16">
-                      <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo</p>
                         <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>
-                          {cavosWallet.balance ? parseFloat(cavosWallet.balance).toFixed(3) : '0,000'}
+                          {usdtBalanceLoading ? '...' : usdtBalanceError ? '--' : `${usdtBalance.toFixed(6)}`}
                         </p>
                       </div>
                       <div className="text-left">
                         <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Tipo de cambio</p>
-                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>$229,51</p>
+                        <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>--</p>
                       </div>
                       <div className="text-left">
                         <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Pesos Argentinos</p>
-                        <p className="font-bold text-lg" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>
-                          ${(parseFloat(cavosWallet.balance || '0') * 229.51).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                        </p>
+                        <p className="font-bold text-lg" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>--</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center space-x-1">
-                      <svg className="w-4 h-4" style={{ color: '#2ECC71' }} fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-4 h-4" style={{ color: '#8B8B8B' }} fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span className="font-medium" style={{ color: '#2ECC71', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>+3.1%</span>
-                  </div>
-                  </div>
+                      <span className="font-medium" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>--</span>
+                    </div>
+              </div>
                 </div>
           </div>
           </motion.div>

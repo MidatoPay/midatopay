@@ -118,8 +118,7 @@ export class StarknetService {
   constructor() {
     this.provider = new RpcProvider({
       nodeUrl: SEPOLIA_CONFIG.rpcUrl,
-      chainId: SEPOLIA_CONFIG.chainId as any,
-      blockIdentifier: 'latest'
+      chainId: SEPOLIA_CONFIG.chainId as any
     });
   }
 
