@@ -62,7 +62,14 @@ export default function CustomHeader() {
               className="text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              ANOTATE
+              ANÓTATE
+            </Link>
+            <Link 
+              href="/aprende" 
+              className="text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
+              style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
+            >
+              APRENDÉ
             </Link>
           </div>
 
@@ -130,7 +137,15 @@ export default function CustomHeader() {
                 style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
                 onClick={() => setIsMenuOpen(false)}
               >
-                ANOTATE
+                ANÓTATE
+              </Link>
+              <Link 
+                href="/aprende" 
+                className="text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
+                style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                APRENDÉ
               </Link>
               <Link 
                 href="/auth/login"
