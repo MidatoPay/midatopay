@@ -31,17 +31,17 @@ export default function QRScannerPage() {
     
     const initCamera = async () => {
       try {
-        console.log('Iniciando cámara...')
+        console.log('Starting camera...')
         setIsInitialized(true)
         
         // Verificar si el navegador soporta getUserMedia
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          setError('Tu navegador no soporta acceso a la cámara')
+          setError('Your browser does not support camera access')
           return
         }
 
         // Solicitar acceso a la cámara
-        console.log('Solicitando acceso a la cámara...')
+        console.log('Requesting camera access...')
         const stream = await navigator.mediaDevices.getUserMedia({ 
           video: { 
             facingMode: 'environment', // Usar cámara trasera si está disponible
@@ -50,8 +50,8 @@ export default function QRScannerPage() {
           } 
         })
         
-        console.log('Stream obtenido:', stream)
-        console.log('Tracks activos:', stream.getTracks().length)
+        console.log('Stream obtained:', stream)
+        console.log('Active tracks:', stream.getTracks().length)
         console.log('Video track:', stream.getVideoTracks()[0])
         
         setHasPermission(true)
@@ -201,7 +201,7 @@ export default function QRScannerPage() {
       // Mostrar los datos de la transacción blockchain
       if (result.data.paymentData.blockchainTransaction) {
         const tx = result.data.paymentData.blockchainTransaction
-        toast.success(`¡Transacción ejecutada! Hash: ${tx.hash}`)
+        toast.success(`Transaction executed! Hash: ${tx.hash}`)
         
         // Redirigir a la página de resultados detallados
         const params = new URLSearchParams({
@@ -217,7 +217,7 @@ export default function QRScannerPage() {
         
         router.push(`/transaction-result?${params.toString()}`)
       } else {
-        toast.success('QR escaneado exitosamente')
+        toast.success('QR scanned successfully')
         
         // Redirigir sin datos de blockchain (transacción pendiente)
         const params = new URLSearchParams({
@@ -234,13 +234,13 @@ export default function QRScannerPage() {
       
     } catch (err) {
       console.error('Error procesando QR:', err)
-      toast.error('Error al procesar el QR Code')
+      toast.error('Error processing QR Code')
     }
   }
 
   const parseEMVQR = (qrData: string) => {
     try {
-      console.log('🔍 Parseando QR:', qrData)
+      console.log('🔍 Parsing QR:', qrData)
       
       // Parsear TLV data del QR EMVCo
       // El QR contiene: 01650x[merchant_address]0205[amount]0326[payment_id]17C1
@@ -249,14 +249,14 @@ export default function QRScannerPage() {
       // Extraer merchant address (65 caracteres después de 01650x)
       const merchantMatch = qrData.match(/01650x([a-f0-9]{65})/)
       if (!merchantMatch) {
-        console.warn('⚠️ No se encontró merchant address válido')
+        console.warn('⚠️ No valid merchant address found')
         return null
       }
       
       // Extraer amount (buscar 0205 seguido de números)
       const amountMatch = qrData.match(/0205(\d+)/)
       if (!amountMatch) {
-        console.warn('⚠️ No se encontró amount válido')
+        console.warn('⚠️ No valid amount found')
         return null
       }
       
@@ -264,7 +264,7 @@ export default function QRScannerPage() {
       const afterAmount = qrData.substring(qrData.indexOf(amountMatch[1]) + amountMatch[1].length)
       const paymentIdMatch = afterAmount.match(/pay_[a-zA-Z0-9_]+/)
       if (!paymentIdMatch) {
-        console.warn('⚠️ No se encontró paymentId válido')
+        console.warn('⚠️ No valid paymentId found')
         return null
       }
       
@@ -272,7 +272,7 @@ export default function QRScannerPage() {
       const amount = parseInt(amountMatch[1])
       const paymentId = paymentIdMatch[0] // Usar el match completo que incluye 'pay_'
       
-      console.log('📱 QR parseado:', { merchantAddress, amount, paymentId })
+      console.log('📱 QR parsed:', { merchantAddress, amount, paymentId })
       
       return {
         merchantAddress,
@@ -282,7 +282,7 @@ export default function QRScannerPage() {
       }
       
     } catch (err) {
-      console.error('Error parseando EMV QR:', err)
+      console.error('Error parsing EMV QR:', err)
       return null
     }
   }
@@ -310,7 +310,7 @@ export default function QRScannerPage() {
             <Link href="/" className="mr-4">
               <Button variant="ghost" size="sm" style={{ color: '#1a1a1a' }}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver
+                Back
               </Button>
             </Link>
             <div className="flex items-center space-x-3">
@@ -318,8 +318,8 @@ export default function QRScannerPage() {
                 <QrCode className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>Escanear QR</h1>
-                <p className="text-sm" style={{ color: '#5d5d5d' }}>Escanea el código QR para pagar</p>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Gromm, sans-serif', color: '#1a1a1a' }}>Scan QR</h1>
+                <p className="text-sm" style={{ color: '#5d5d5d' }}>Scan the QR code to pay</p>
               </div>
             </div>
           </div>
@@ -338,10 +338,10 @@ export default function QRScannerPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Camera className="w-5 h-5" style={{ color: '#fe6c1c' }} />
-                  <span>Cámara</span>
+                  <span>Camera</span>
                 </CardTitle>
                 <CardDescription>
-                  Apunta la cámara al código QR del comercio
+                  Point the camera at the merchant QR code
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -350,9 +350,9 @@ export default function QRScannerPage() {
                     <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
                       <div className="text-center">
                         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                        <p className="text-gray-600 mb-4">Se requieren permisos de cámara</p>
+                        <p className="text-gray-600 mb-4">Camera permissions required</p>
                         <Button onClick={retryScanning} variant="outline">
-                          Permitir Cámara
+                          Allow Camera
                         </Button>
                       </div>
                     </div>
@@ -362,7 +362,7 @@ export default function QRScannerPage() {
                         <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
                         <p className="text-gray-600 mb-4">{error}</p>
                         <Button onClick={retryScanning} variant="outline">
-                          Reintentar
+                          Retry
                         </Button>
                       </div>
                     </div>
@@ -370,9 +370,9 @@ export default function QRScannerPage() {
                     <div className="aspect-video bg-green-50 rounded-lg flex items-center justify-center">
                       <div className="text-center">
                         <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                        <p className="text-green-700 mb-4">¡QR escaneado exitosamente!</p>
+                        <p className="text-green-700 mb-4">QR scanned successfully!</p>
                         <Button onClick={retryScanning} variant="outline">
-                          Escanear Otro
+                          Scan Another
                         </Button>
                       </div>
                     </div>
@@ -380,7 +380,7 @@ export default function QRScannerPage() {
                     <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Cargando scanner...</p>
+                        <p className="text-gray-600">Loading scanner...</p>
                       </div>
                     </div>
                   ) : (
@@ -409,7 +409,7 @@ export default function QRScannerPage() {
                           className="bg-white/90 hover:bg-white"
                         >
                           <QrCode className="w-4 h-4 mr-2" />
-                          Simular QR (Test)
+                          Simulate QR (Test)
                         </Button>
                         <Button 
                           onClick={() => window.location.reload()}
@@ -418,7 +418,7 @@ export default function QRScannerPage() {
                           className="bg-white/90 hover:bg-white"
                         >
                           <Camera className="w-4 h-4 mr-2" />
-                          Reiniciar Cámara
+                          Restart Camera
                         </Button>
                       </div>
                     </div>
@@ -438,10 +438,10 @@ export default function QRScannerPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <QrCode className="w-5 h-5" style={{ color: '#fe6c1c' }} />
-                  <span>Instrucciones</span>
+                  <span>Instructions</span>
                 </CardTitle>
                 <CardDescription>
-                  Cómo usar el escáner de QR
+                  How to use the QR scanner
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -451,8 +451,8 @@ export default function QRScannerPage() {
                       <span className="text-sm font-medium text-orange-600">1</span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Permite el acceso a la cámara</h3>
-                      <p className="text-sm text-gray-600">Tu navegador te pedirá permisos para usar la cámara</p>
+                      <h3 className="font-medium text-gray-900">Allow camera access</h3>
+                      <p className="text-sm text-gray-600">Your browser will ask for camera permissions</p>
                     </div>
                   </div>
 
@@ -461,8 +461,8 @@ export default function QRScannerPage() {
                       <span className="text-sm font-medium text-orange-600">2</span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Apunta al código QR</h3>
-                      <p className="text-sm text-gray-600">Coloca el código QR del comercio dentro del marco</p>
+                      <h3 className="font-medium text-gray-900">Point to the QR code</h3>
+                      <p className="text-sm text-gray-600">Place the merchant QR code within the frame</p>
                     </div>
                   </div>
 
@@ -471,18 +471,18 @@ export default function QRScannerPage() {
                       <span className="text-sm font-medium text-orange-600">3</span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Confirma el pago</h3>
-                      <p className="text-sm text-gray-600">Revisa los detalles y confirma tu pago en ARS</p>
+                      <h3 className="font-medium text-gray-900">Confirm payment</h3>
+                      <p className="text-sm text-gray-600">Review details and confirm your payment in ARS</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-blue-900 mb-2">💡 Consejos</h4>
+                  <h4 className="font-medium text-blue-900 mb-2">💡 Tips</h4>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Asegúrate de tener buena iluminación</li>
-                    <li>• Mantén el QR estable dentro del marco</li>
-                    <li>• El QR debe estar completo y visible</li>
+                    <li>• Make sure you have good lighting</li>
+                    <li>• Keep the QR stable within the frame</li>
+                    <li>• The QR must be complete and visible</li>
                   </ul>
                 </div>
               </CardContent>

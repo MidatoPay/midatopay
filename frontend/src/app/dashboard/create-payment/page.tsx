@@ -22,7 +22,7 @@ import { OracleConversionPreview } from '@/components/OracleConversionPreview'
 import { QRModal } from '@/components/QRModal'
 
 const createPaymentSchema = z.object({
-  amount: z.number().min(1, 'El monto debe ser mayor a 0'),
+  amount: z.number().min(1, 'Amount must be greater than 0'),
 })
 
 type CreatePaymentForm = z.infer<typeof createPaymentSchema>
@@ -52,7 +52,7 @@ export default function CreatePaymentPage() {
 
   const onSubmit = async (data: CreatePaymentForm) => {
     if (!isAuthenticated) {
-      toast.error('Debes estar autenticado para crear pagos')
+      toast.error('You must be authenticated to create payments')
       return
     }
 
@@ -67,12 +67,12 @@ export default function CreatePaymentPage() {
       if (result.success) {
         setQrData(result)
         setShowQRModal(true)
-        toast.success('¡QR generado exitosamente!')
+        toast.success('QR generated successfully!')
       } else {
-        throw new Error(result.error || 'Error al generar QR')
+        throw new Error(result.error || 'Error generating QR')
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error al generar QR')
+      toast.error(error instanceof Error ? error.message : 'Error generating QR')
     } finally {
       setIsCreating(false)
     }
@@ -97,12 +97,12 @@ export default function CreatePaymentPage() {
             <div className="flex items-center space-x-4">
               <Link href="/dashboard" className="flex items-center space-x-2 text-gray-600 hover:text-orange-600 transition-colors">
                 <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Volver al Dashboard</span>
+                <span className="font-medium">Back to Dashboard</span>
               </Link>
             </div>
             <div className="flex items-center space-x-2">
               <QrCode className="w-6 h-6" style={{ color: '#fe6c1c' }} />
-              <h1 className="text-xl font-bold" style={{ color: '#1a1a1a' }}>Crear Pago</h1>
+              <h1 className="text-xl font-bold" style={{ color: '#1a1a1a' }}>Create Payment</h1>
             </div>
           </div>
         </div>
@@ -127,10 +127,10 @@ export default function CreatePaymentPage() {
             >
               <CardHeader className="text-center pb-6">
                 <CardTitle className="text-2xl font-bold" style={{ color: '#1a1a1a' }}>
-                  Detalles del Pago
+                  Payment Details
                 </CardTitle>
                 <CardDescription className="text-base" style={{ color: '#5d5d5d' }}>
-                  Completa los datos para generar el QR de pago
+                  Complete the details to generate the payment QR
                 </CardDescription>
               </CardHeader>
               
@@ -139,7 +139,7 @@ export default function CreatePaymentPage() {
                   
                   {/* Monto */}
                   <div className="space-y-2">
-                    <Label htmlFor="amount" style={{ color: '#1a1a1a', fontWeight: '500' }}>Monto en ARS</Label>
+                    <Label htmlFor="amount" style={{ color: '#1a1a1a', fontWeight: '500' }}>Amount in ARS</Label>
                     <div className="relative">
                       <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: '#fe6c1c' }} />
                       <img 
@@ -168,7 +168,7 @@ export default function CreatePaymentPage() {
 
                   {/* Cripto a Recibir */}
                   <div className="space-y-2">
-                    <Label htmlFor="receiveCurrency" style={{ color: '#1a1a1a', fontWeight: '500' }}>Cripto a Recibir</Label>
+                    <Label htmlFor="receiveCurrency" style={{ color: '#1a1a1a', fontWeight: '500' }}>Crypto to Receive</Label>
                     <div className="relative">
                       <div className="w-full h-12 px-4 py-3 rounded-xl flex items-center justify-between"
                         style={{ 
@@ -193,11 +193,11 @@ export default function CreatePaymentPage() {
                           </div>
                           <span className="font-medium">USDT (Tether)</span>
                         </div>
-                        <span className="text-sm" style={{ color: '#5d5d5d' }}>Fijo</span>
+                        <span className="text-sm" style={{ color: '#5d5d5d' }}>Fixed</span>
                       </div>
                     </div>
                     <p className="text-xs" style={{ color: '#5d5d5d' }}>
-                      Recibirás automáticamente en USDT según el rate del Oracle
+                      You will automatically receive USDT according to the Oracle rate
                     </p>
                   </div>
 
@@ -215,12 +215,12 @@ export default function CreatePaymentPage() {
                     {isCreating ? (
                       <div className="flex items-center space-x-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Generando QR...</span>
+                        <span>Generating QR...</span>
                       </div>
                     ) : (
                       <div className="flex items-center space-x-2">
                         <QrCode className="w-5 h-5" />
-                        <span>Generar QR de Pago</span>
+                        <span>Generate Payment QR</span>
                       </div>
                     )}
                   </Button>
@@ -260,10 +260,10 @@ export default function CreatePaymentPage() {
             
             if (result.success) {
               setQrData(result)
-              toast.success('QR actualizado')
+              toast.success('QR updated')
             }
           } catch (error) {
-            toast.error('Error al actualizar QR')
+            toast.error('Error updating QR')
           } finally {
             setRefreshingQR(false)
           }

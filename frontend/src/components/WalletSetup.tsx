@@ -22,7 +22,7 @@ export function WalletSetup() {
   // Registrar nueva wallet
   const handleRegister = async () => {
     if (!email || !password) {
-      toast.error('Email y contraseña son requeridos');
+      toast.error('Email and password are required');
       return;
     }
 
@@ -30,10 +30,10 @@ export function WalletSetup() {
       setIsRegistering(true);
       const newWallet = generateWallet(email, password);
       await saveWallet(newWallet);
-      toast.success('✅ Wallet creada exitosamente!');
+      toast.success('✅ Wallet created successfully!');
       console.log('Nueva wallet:', newWallet);
     } catch (error) {
-      toast.error('Error creando wallet');
+      toast.error('Error creating wallet');
       console.error('Error:', error);
     } finally {
       setIsRegistering(false);
@@ -43,7 +43,7 @@ export function WalletSetup() {
   // Login con wallet existente
   const handleLogin = async () => {
     if (!email || !password) {
-      toast.error('Email y contraseña son requeridos');
+      toast.error('Email and password are required');
       return;
     }
 
@@ -51,12 +51,12 @@ export function WalletSetup() {
       setIsLoggingIn(true);
       const success = login(email, password);
       if (success) {
-        toast.success('✅ Login exitoso!');
+        toast.success('✅ Login successful!');
       } else {
-        toast.error('Credenciales inválidas');
+        toast.error('Invalid credentials');
       }
     } catch (error) {
-      toast.error('Error en login');
+      toast.error('Login error');
     } finally {
       setIsLoggingIn(false);
     }
@@ -73,37 +73,37 @@ export function WalletSetup() {
       a.download = `midatopay-wallet-${wallet?.email || 'backup'}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success('✅ Wallet exportada');
+      toast.success('✅ Wallet exported');
     } else {
-      toast.error('Error exportando wallet');
+      toast.error('Error exporting wallet');
     }
   };
 
   // Importar wallet
   const handleImport = () => {
     if (!importData.trim()) {
-      toast.error('Datos de importación requeridos');
+      toast.error('Import data required');
       return;
     }
 
     try {
       const success = importWallet(importData);
       if (success) {
-        toast.success('✅ Wallet importada exitosamente!');
+        toast.success('✅ Wallet imported successfully!');
         setShowImport(false);
         setImportData('');
       } else {
-        toast.error('Error importando wallet');
+        toast.error('Error importing wallet');
       }
     } catch (error) {
-      toast.error('Formato de wallet inválido');
+      toast.error('Invalid wallet format');
     }
   };
 
   // Logout
   const handleLogout = () => {
     logout();
-    toast.success('✅ Logout exitoso');
+    toast.success('✅ Logout successful');
   };
 
   if (isConnected && wallet) {
@@ -112,22 +112,22 @@ export function WalletSetup() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Wallet className="w-5 h-5" />
-            <span>Wallet Conectada</span>
+            <span>Wallet Connected</span>
           </CardTitle>
           <CardDescription>
-            Comercio: {wallet.email}
+            Merchant: {wallet.email}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Dirección:</Label>
+            <Label>Address:</Label>
             <p className="text-sm font-mono bg-gray-100 p-2 rounded break-all">
               {wallet.address}
             </p>
           </div>
           
           <div className="space-y-2">
-            <Label>Creada:</Label>
+            <Label>Created:</Label>
             <p className="text-sm text-gray-600">
               {new Date(wallet.createdAt).toLocaleString()}
             </p>
@@ -136,7 +136,7 @@ export function WalletSetup() {
           <div className="flex space-x-2">
             <Button onClick={handleExport} variant="outline" size="sm" className="flex-1">
               <Download className="w-4 h-4 mr-1" />
-              Exportar
+              Export
             </Button>
             <Button onClick={handleLogout} variant="destructive" size="sm" className="flex-1">
               <LogOut className="w-4 h-4 mr-1" />
@@ -153,33 +153,33 @@ export function WalletSetup() {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Wallet className="w-5 h-5" />
-          <span>Configurar Wallet</span>
+          <span>Setup Wallet</span>
         </CardTitle>
         <CardDescription>
-          Genera o importa tu wallet persistente para el comercio
+          Generate or import your persistent wallet for commerce
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {!showImport ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor="email">Email del Comercio</Label>
+              <Label htmlFor="email">Merchant Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="comercio@ejemplo.com"
+                placeholder="merchant@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Contraseña segura"
+                  placeholder="Secure password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -201,7 +201,7 @@ export function WalletSetup() {
                 disabled={isRegistering}
                 className="flex-1"
               >
-                {isRegistering ? 'Creando...' : 'Crear Wallet'}
+                {isRegistering ? 'Creating...' : 'Create Wallet'}
               </Button>
               <Button 
                 onClick={handleLogin} 
@@ -209,7 +209,7 @@ export function WalletSetup() {
                 disabled={isLoggingIn}
                 className="flex-1"
               >
-                {isLoggingIn ? 'Conectando...' : 'Conectar'}
+                {isLoggingIn ? 'Connecting...' : 'Connect'}
               </Button>
             </div>
 
@@ -220,7 +220,7 @@ export function WalletSetup() {
                 size="sm"
               >
                 <Upload className="w-4 h-4 mr-1" />
-                Importar Wallet
+                Import Wallet
               </Button>
               <div>
                 <Button 
@@ -228,7 +228,7 @@ export function WalletSetup() {
                   variant="destructive" 
                   size="sm"
                 >
-                  🧹 Limpiar Wallets Corruptas
+                  🧹 Clear Corrupted Wallets
                 </Button>
               </div>
             </div>
@@ -236,10 +236,10 @@ export function WalletSetup() {
         ) : (
           <>
             <div className="space-y-2">
-              <Label>Datos de Wallet (JSON)</Label>
+              <Label>Wallet Data (JSON)</Label>
               <textarea
                 className="w-full h-32 p-2 border rounded text-sm font-mono"
-                placeholder="Pega aquí el JSON de tu wallet..."
+                placeholder="Paste your wallet JSON here..."
                 value={importData}
                 onChange={(e) => setImportData(e.target.value)}
               />
@@ -247,14 +247,14 @@ export function WalletSetup() {
 
             <div className="flex space-x-2">
               <Button onClick={handleImport} className="flex-1">
-                Importar
+                Import
               </Button>
               <Button 
                 onClick={() => setShowImport(false)} 
                 variant="outline" 
                 className="flex-1"
               >
-                Cancelar
+                Cancel
               </Button>
             </div>
           </>

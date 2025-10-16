@@ -89,7 +89,7 @@ function DashboardContent() {
 
   const handleLogout = () => {
     logout()
-    toast.success('Sesión cerrada')
+    toast.success('Session closed')
     router.push('/')
   }
 
@@ -107,14 +107,14 @@ function DashboardContent() {
           isLoading: false
         })
         
-        toast.success('Wallet conectada exitosamente')
+        toast.success('Wallet connected successfully')
       } else {
-        toast.error('No hay wallet configurada. Usa el componente WalletSetup.')
+        toast.error('No wallet configured. Use the WalletSetup component.')
         setMerchantWallet(prev => ({ ...prev, isLoading: false }))
       }
     } catch (error) {
       console.error('Error connecting wallet:', error)
-      toast.error('Error conectando wallet')
+      toast.error('Error connecting wallet')
       setMerchantWallet(prev => ({ ...prev, isLoading: false }))
     }
   }
@@ -128,10 +128,10 @@ function DashboardContent() {
         balance: null,
         isLoading: false
       })
-      toast.success('Wallet desconectada')
+      toast.success('Wallet disconnected')
     } catch (error) {
       console.error('Error disconnecting wallet:', error)
-      toast.error('Error desconectando wallet')
+      toast.error('Error disconnecting wallet')
     }
   }
 
@@ -141,7 +141,7 @@ function DashboardContent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     )
@@ -188,7 +188,7 @@ function DashboardContent() {
                 <span className="text-xs font-medium" style={{ 
                   color: merchantWallet.isConnected ? '#10b981' : '#ef4444' 
                 }}>
-                  {merchantWallet.isConnected ? 'Wallet Conectada' : 'Wallet Desconectada'}
+                  {merchantWallet.isConnected ? 'Wallet Connected' : 'Wallet Disconnected'}
                 </span>
               </div>
               
@@ -215,7 +215,7 @@ function DashboardContent() {
             {/* Welcome Section */}
                      <div style={{ marginTop: '48px' }}>
                        <h2 className="mb-0" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C', fontWeight: 500, fontSize: '24px', marginBottom: '-10px' }}>
-                         ¡Bienvenido,
+                         Welcome,
                        </h2>
                        <h2 className="mb-0" style={{ fontFamily: 'Kufam, sans-serif', color: '#FF6A00', fontWeight: 600, fontSize: '62px' }}>
                          Café Meka!
@@ -230,7 +230,7 @@ function DashboardContent() {
                     <img src="/logo-arg.png" alt="Argentina" className="w-8 h-8" />
                   </div>
                            <div className="flex-1">
-                             <p className="text-base font-medium" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo Total:</p>
+                             <p className="text-base font-medium" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Total Balance:</p>
                              <p className="text-3xl font-bold" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>
                                $ 0
                              </p>
@@ -256,13 +256,13 @@ function DashboardContent() {
         >
           <div style={{ backgroundColor: '#2C2C2C', borderRadius: '20px', padding: '32px' }}>
             <div className="flex items-center justify-between mb-6">
-              <h4 className="text-lg font-semibold" style={{ color: '#FFFFFF', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Saldo en Criptomonedas:</h4>
+              <h4 className="text-lg font-semibold" style={{ color: '#FFFFFF', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Crypto Balance:</h4>
               <button className="px-3 py-1 rounded-lg text-sm font-medium" style={{ backgroundColor: '#FF6A00', color: '#FFFFFF', fontFamily: 'Kufam, sans-serif', fontWeight: 500, borderRadius: '8px', boxShadow: '0px 2px 4px rgba(0,0,0,0.1)' }}>
                 <div className="flex items-center space-x-1">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
-                  <span>Filtrar</span>
+                  <span>Filter</span>
                 </div>
               </button>
             </div>
@@ -292,17 +292,17 @@ function DashboardContent() {
                     
                     <div className="grid grid-cols-[1fr_1fr_1fr] gap-16">
                       <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Saldo</p>
+                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Balance</p>
                         <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>
                           {usdtBalanceLoading ? '...' : usdtBalanceError ? '--' : `${usdtBalance.toFixed(6)}`}
                         </p>
                       </div>
                       <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Tipo de cambio</p>
+                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Exchange Rate</p>
                         <p className="font-bold text-lg" style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>--</p>
                       </div>
                       <div className="text-left">
-                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Pesos Argentinos</p>
+                        <p className="text-sm" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Argentine Pesos</p>
                         <p className="font-bold text-lg" style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif', fontWeight: 500 }}>--</p>
                       </div>
                     </div>
@@ -337,26 +337,26 @@ function DashboardContent() {
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#10b981' }}>
                     <Wallet className="w-4 h-4 text-white" />
                   </div>
-                  <span style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Información de Wallet</span>
+                  <span style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Wallet Information</span>
                 </CardTitle>
                 <CardDescription style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>
-                  Detalles de tu wallet Cavos Aegis conectada
+                  Details of your connected Cavos Aegis wallet
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Dirección */}
                   <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <h4 className="font-semibold text-green-800 mb-2" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Dirección</h4>
+                    <h4 className="font-semibold text-green-800 mb-2" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Address</h4>
                     <p className="text-sm font-mono text-green-800 break-all" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>
                       {merchantWallet.address}
                     </p>
-                    <p className="text-xs text-green-600 mt-1" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Dirección de tu wallet</p>
+                    <p className="text-xs text-green-600 mt-1" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Your wallet address</p>
                   </div>
                   
                   {/* Red */}
                   <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                    <h4 className="font-semibold text-purple-800 mb-2" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Red</h4>
+                    <h4 className="font-semibold text-purple-800 mb-2" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Network</h4>
                     <p className="text-lg font-bold text-purple-900" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Starknet Sepolia</p>
                     <p className="text-sm text-purple-700" style={{ fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Testnet</p>
                   </div>
@@ -374,8 +374,8 @@ function DashboardContent() {
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Centro de Control</h3>
-            <p className="text-sm" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Gestiona tu negocio desde aquí</p>
+            <h3 className="text-xl font-semibold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Control Center</h3>
+            <p className="text-sm" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Manage your business from here</p>
           </div>
           
           {/* Acciones Principales */}
@@ -392,8 +392,8 @@ function DashboardContent() {
                       <Plus className="w-5 h-5 text-white" />
                     </div>
                   </div>
-                  <p className="text-sm font-semibold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Crear Pago</p>
-                  <p className="text-xs mt-1" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>QR Instantáneo</p>
+                  <p className="text-sm font-semibold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif', fontWeight: 700 }}>Create Payment</p>
+                  <p className="text-xs mt-1" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif', fontWeight: 400 }}>Instant QR</p>
                 </CardContent>
               </Link>
             </Card>

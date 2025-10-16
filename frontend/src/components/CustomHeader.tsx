@@ -55,21 +55,21 @@ export default function CustomHeader() {
               className="text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              INICIO
+              HOME
             </Link>
             <Link 
               href="/anotate" 
               className="text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              ANÓTATE
+              JOIN WAITLIST
             </Link>
             <Link 
               href="/aprende" 
               className="text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              APRENDÉ
+              LEARN
             </Link>
           </div>
 
@@ -80,7 +80,7 @@ export default function CustomHeader() {
               className="px-5 py-2 text-base font-medium transition-all duration-300 hover:text-orange-500 hover:scale-105"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              INICIAR SESIÓN
+              LOGIN
             </Link>
             <Link 
               href="/auth/register"
@@ -90,7 +90,7 @@ export default function CustomHeader() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              REGISTRATE
+              SIGN UP
             </Link>
           </div>
 
@@ -129,7 +129,7 @@ export default function CustomHeader() {
                 style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
                 onClick={() => setIsMenuOpen(false)}
               >
-                INICIO
+                HOME
               </Link>
               <Link 
                 href="/anotate" 
@@ -137,7 +137,7 @@ export default function CustomHeader() {
                 style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
                 onClick={() => setIsMenuOpen(false)}
               >
-                ANÓTATE
+                JOIN WAITLIST
               </Link>
               <Link 
                 href="/aprende" 
@@ -145,7 +145,7 @@ export default function CustomHeader() {
                 style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
                 onClick={() => setIsMenuOpen(false)}
               >
-                APRENDÉ
+                LEARN
               </Link>
               <Link 
                 href="/auth/login"
@@ -153,7 +153,7 @@ export default function CustomHeader() {
                 style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
                 onClick={() => setIsMenuOpen(false)}
               >
-                INICIAR SESIÓN
+                LOGIN
               </Link>
               <Link 
                 href="/auth/register"
@@ -164,7 +164,7 @@ export default function CustomHeader() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                REGISTRATE
+                SIGN UP
               </Link>
             </div>
           </div>

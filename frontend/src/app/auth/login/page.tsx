@@ -49,7 +49,7 @@ const GoogleLogo = ({ size = 20 }) => (
 );
 
 const passwordSchema = z.object({
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
 type PasswordForm = z.infer<typeof passwordSchema>
@@ -76,11 +76,11 @@ export default function LoginPage() {
       clearError()
       await login(emailValue, data.password)
       console.log('✅ Login exitoso')
-      toast.success('¡Bienvenido a MidatoPay!')
+      toast.success('Welcome to MidatoPay!')
       router.push('/dashboard')
     } catch (error) {
       console.error('❌ Error en login:', error)
-      toast.error(error instanceof Error ? error.message : 'Error al iniciar sesión')
+      toast.error(error instanceof Error ? error.message : 'Error logging in')
     }
   }
 
@@ -94,7 +94,7 @@ export default function LoginPage() {
       clearError()
     } else {
       console.log('❌ Email inválido')
-      toast.error('Por favor ingresa un email válido')
+      toast.error('Please enter a valid email')
     }
   }
 
@@ -134,10 +134,10 @@ export default function LoginPage() {
           <div className="mb-8">
             <Link href="/" className="inline-flex items-center space-x-2 transition-colors mb-6" style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}>
             <ArrowLeft className="w-4 h-4" />
-            <span>Volver al inicio</span>
+            <span>Back to home</span>
           </Link>
           
-            <h1 className="text-3xl font-bold" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}>Iniciar Sesión</h1>
+            <h1 className="text-3xl font-bold" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}>Login</h1>
         </div>
 
         {/* Formulario */}
@@ -157,7 +157,7 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder="your@email.com"
                     value={emailValue}
                     onChange={(e) => setEmailValue(e.target.value)}
                     className="w-full h-14 pl-4 pr-4 text-lg rounded-xl border-0 focus:ring-2 focus:ring-[#FF6A00]"
@@ -202,7 +202,7 @@ export default function LoginPage() {
                     className="text-sm underline"
                     style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif' }}
                   >
-                    Cambiar
+                    Change
                   </button>
                 </div>
               </div>
@@ -213,7 +213,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Tu contraseña"
+                    placeholder="Your password"
                     {...register('password')}
                     className="w-full h-14 pl-4 pr-4 text-lg rounded-xl border-0 focus:ring-2 focus:ring-[#FF6A00]"
                     style={{ 
@@ -261,7 +261,7 @@ export default function LoginPage() {
                   fontWeight: '500'
                 }}
               >
-                {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                {isLoading ? 'Logging in...' : 'Login'}
               </Button>
             </form>
           )}
@@ -302,7 +302,7 @@ export default function LoginPage() {
                   }}
                 >
                   <GoogleLogo size={20} />
-                  Continuar con Google
+                  Continue with Google
                   <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -321,7 +321,7 @@ export default function LoginPage() {
                   }}
                 >
                   <AppleLogo size={20} color="#2C2C2C" />
-                  Continuar con Apple
+                  Continue with Apple
                   <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -333,13 +333,13 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-8 text-center">
             <p style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif', fontSize: '14px' }}>
-                ¿No tienes cuenta?{' '}
+                Don't have an account?{' '}
                 <Link
                   href="/auth/register"
                   className="font-medium transition-colors underline-offset-2 hover:underline"
                 style={{ color: '#FF6A00' }}
                 >
-                Regístrate
+                Sign Up
                 </Link>
             </p>
               </div>

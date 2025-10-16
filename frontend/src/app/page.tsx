@@ -20,7 +20,7 @@ import CustomHeader from '@/components/CustomHeader'
 export default function HomePage() {
   const [typewriterText, setTypewriterText] = useState('')
   
-  const words = ['inflación', 'devaluación', 'crisis']
+  const words = ['inflation', 'devaluation', 'crisis']
   const typewriterRef = useRef({
     currentWordIndex: 0,
     charIndex: 0,
@@ -160,9 +160,9 @@ export default function HomePage() {
                     color: '#2C2C2C'
                   }}
                 >
-                  Tu negocio,
+                  Your business,
                   <br />
-                  inmune a la <br />
+                  immune to <br />
                   <span style={{ color: '#FF6A00' }}>
                     {typewriterText}
                     <span className="animate-pulse">|</span>
@@ -177,13 +177,13 @@ export default function HomePage() {
                     fontWeight: 500
                   }}
                 >
-                  Protegé el valor de tus ventas <br />sin cambiar tu forma de cobrar.
+                  Protect the value of your sales <br />without changing how you collect.
                 </p>
                 
                 <div className="flex flex-col items-start mb-6">
                   <Button size="lg" className="text-lg px-8 py-5 text-white mb-2 rounded-xl" style={{ backgroundColor: '#FF6A00', fontFamily: 'Kufam, sans-serif' }} asChild>
                     <Link href="/auth/register">
-                      Empezar ya
+                      Get Started
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </Link>
                   </Button>
@@ -191,7 +191,7 @@ export default function HomePage() {
 
                 {/* Crypto Badges */}
                 <div className="flex items-center gap-4 flex-wrap">
-                  <span className="text-lg font-semibold" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}>Cobrá:</span>
+                  <span className="text-lg font-semibold" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}>Collect:</span>
                   <div className="flex items-center gap-3">
                     {/* ARS Badge */}
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ 
@@ -212,7 +212,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   
-                  <span className="text-lg font-semibold ml-4" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}>Recibí:</span>
+                  <span className="text-lg font-semibold ml-4" style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}>Receive:</span>
                   <div className="flex items-center gap-3">
                     {/* USDT Badge */}
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ 
@@ -317,17 +317,16 @@ export default function HomePage() {
             >
               <div className="text-white">
                 <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  Empezá a
+                  Start beating
                 </h3>
                 <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  ganarle
+                  inflation
                 </h3>
                 <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  a la inflación
                 </h3>
                 
                 <button className="bg-white text-orange-600 px-4 py-2 rounded-xl font-semibold flex items-center gap-2 hover:bg-gray-50 transition-colors text-sm">
-                  Empezar
+                  Start
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
@@ -348,17 +347,17 @@ export default function HomePage() {
             >
               <div className="text-white">
                 <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  QR interoperable:
+                  Interoperable QR:
                 </h3>
                 <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  aceptá cualquier
+                  accept any
                 </h3>
                 <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  billetera
+                  wallet
                 </h3>
                 
                 <button className="bg-orange-500 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2 hover:bg-orange-600 transition-colors text-sm">
-                  Ver más
+                  Learn more
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
@@ -382,17 +381,17 @@ export default function HomePage() {
             >
               <div className="text-orange-600">
                 <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  +50 Comercios
+                  +50 Merchants
                 </h3>
                 <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                  eligen a
+                  choose
                 </h3>
                 <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Kufam, sans-serif' }}>
                   MidatoPay
                 </h3>
                 
                 <button className="bg-gradient-to-r from-orange-500 to-orange-400 text-white px-4 py-2 rounded-xl font-semibold flex items-center gap-2 hover:from-orange-600 hover:to-orange-500 transition-colors text-sm">
-                  Ser parte
+                  Join us
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
@@ -601,7 +600,7 @@ export default function HomePage() {
                     style={{ color: '#2C2C2C' }}
                   >
                     {processSteps[2].title}
-                  </h3>
+                </h3>
                   <p 
                     className="text-base leading-relaxed text-left"
                     style={{ color: '#8B8B8B' }}
@@ -636,7 +635,7 @@ export default function HomePage() {
                     style={{ color: '#2C2C2C' }}
                   >
                     {processSteps[3].title}
-                  </h3>
+                </h3>
                   <p 
                     className="text-base leading-relaxed text-left"
                     style={{ color: '#8B8B8B' }}

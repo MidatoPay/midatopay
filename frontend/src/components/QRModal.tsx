@@ -39,10 +39,10 @@ export function QRModal({
     try {
       await navigator.clipboard.writeText(qrData.qrCodeImage);
       setCopied(true);
-      toast.success('QR copiado al portapapeles');
+      toast.success('QR copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Error al copiar QR');
+      toast.error('Error copying QR');
     }
   };
 
@@ -52,9 +52,9 @@ export function QRModal({
       link.href = qrData.qrCodeImage;
       link.download = `pago-${qrData.paymentData.sessionId}.png`;
       link.click();
-      toast.success('QR descargado');
+      toast.success('QR downloaded');
     } catch (error) {
-      toast.error('Error al descargar QR');
+      toast.error('Error downloading QR');
     }
   };
 
@@ -76,10 +76,10 @@ export function QRModal({
             </div>
             <div>
               <h2 className="text-xl font-bold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif' }}>
-                ¡QR Generado!
+                QR Generated!
               </h2>
               <p className="text-sm" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}>
-                Comparte este código QR
+                Share this QR code
               </p>
             </div>
           </div>
@@ -99,7 +99,7 @@ export function QRModal({
           <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-200">
             <img
               src={qrData.qrCodeImage}
-              alt="QR Code del pago"
+              alt="Payment QR Code"
               className="w-64 h-64 mx-auto"
             />
             
@@ -108,7 +108,7 @@ export function QRModal({
                 <div className="flex items-center justify-center space-x-2">
                   <div className="w-4 h-4 rounded-full border-2 border-orange-200 border-t-orange-500 animate-spin"></div>
                   <p className="text-sm" style={{ color: '#fe6c1c', fontFamily: 'Kufam, sans-serif' }}>
-                    Generando nuevo QR...
+                    Generating new QR...
                   </p>
                 </div>
               </div>
@@ -125,10 +125,10 @@ export function QRModal({
             </p>
             <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
               <p className="text-sm text-blue-800" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                <span className="font-semibold">Recibirás:</span> {qrData.paymentData.cryptoAmount?.toFixed(6) || 'Calculando...'} {qrData.paymentData.targetCrypto || 'USDT'}
+                <span className="font-semibold">You will receive:</span> {qrData.paymentData.cryptoAmount?.toFixed(6) || 'Calculating...'} {qrData.paymentData.targetCrypto || 'USDT'}
               </p>
               <p className="text-xs text-blue-600 mt-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                Rate: 1 {qrData.paymentData.targetCrypto || 'USDT'} = {qrData.paymentData.exchangeRate?.toLocaleString() || 'Calculando...'} ARS
+                Rate: 1 {qrData.paymentData.targetCrypto || 'USDT'} = {qrData.paymentData.exchangeRate?.toLocaleString() || 'Calculating...'} ARS
               </p>
             </div>
           </div>
@@ -143,7 +143,7 @@ export function QRModal({
               style={{ fontFamily: 'Kufam, sans-serif' }}
             >
               <Copy className="w-4 h-4 mr-2" />
-              {copied ? 'Copiado!' : 'Copiar QR'}
+              {copied ? 'Copied!' : 'Copy QR'}
             </Button>
             <Button
               className="flex-1 h-12 rounded-xl"
@@ -151,7 +151,7 @@ export function QRModal({
               onClick={handleDownloadQR}
             >
               <Download className="w-4 h-4 mr-2" />
-              Descargar
+              Download
             </Button>
           </div>
 
@@ -165,14 +165,14 @@ export function QRModal({
               style={{ fontFamily: 'Kufam, sans-serif' }}
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refrescando...' : 'Refrescar QR'}
+              {refreshing ? 'Refreshing...' : 'Refresh QR'}
             </Button>
           )}
 
           {/* Información adicional */}
           <div className="text-xs space-y-1" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}>
             <p>Session ID: {qrData.paymentData.sessionId}</p>
-            <p>Generado: {new Date().toLocaleString('es-AR')}</p>
+            <p>Generated: {new Date().toLocaleString('en-US')}</p>
           </div>
 
           {/* Botón cerrar */}
@@ -182,7 +182,7 @@ export function QRModal({
             onClick={onClose}
             style={{ fontFamily: 'Kufam, sans-serif' }}
           >
-            Cerrar
+            Close
           </Button>
         </div>
       </motion.div>

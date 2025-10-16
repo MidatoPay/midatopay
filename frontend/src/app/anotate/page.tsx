@@ -62,10 +62,10 @@ export default function AnotatePage() {
         setShowEmailModal(false)
       } else {
         const data = await response.json()
-        setError(data.message || 'Error al unirse a la lista de espera')
+        setError(data.message || 'Error joining the waitlist')
       }
     } catch (err) {
-      setError('Error de conexión. Por favor, intenta nuevamente.')
+      setError('Connection error. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -98,25 +98,25 @@ export default function AnotatePage() {
                   >
                     <span style={{ color: '#FF6A00' }}>MidatoPay</span>
                     <br />
-                    La solución de los comerciantes para protegerse de la{' '}
-                    <span style={{ color: '#FF6A00' }}>Inflación</span>
+                    The merchants' solution to protect themselves from{' '}
+                    <span style={{ color: '#FF6A00' }}>Inflation</span>
               </h1>
               
               <p 
                     className="text-xl leading-relaxed mb-8"
                     style={{ fontFamily: 'Kufam, sans-serif', color: '#5d5d5d' }}
                   >
-                    La primera wallet para comerciantes que permite cobrar con QR interoperable y recibir pagos directamente en criptomonedas. Protege tu negocio contra la inflación mientras facilitas transacciones modernas y seguras.
+                    The first merchant wallet that allows charging with interoperable QR and receiving payments directly in cryptocurrencies. Protect your business against inflation while facilitating modern and secure transactions.
                   </p>
                 </div>
 
                 {/* Features */}
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { icon: <Shield className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Protección contra inflación" },
-                    { icon: <Zap className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Transacciones instantáneas" },
-                    { icon: <TrendingUp className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Pagos en crypto" },
-                    { icon: <Star className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "QR interoperable" }
+                    { icon: <Shield className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Protection against inflation" },
+                    { icon: <Zap className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Instant transactions" },
+                    { icon: <TrendingUp className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Crypto payments" },
+                    { icon: <Star className="w-5 h-5" style={{ color: '#FF6A00' }} />, text: "Interoperable QR" }
                   ].map((feature, index) => (
                     <motion.div
                       key={index}
@@ -153,7 +153,7 @@ export default function AnotatePage() {
                     }}
                     onClick={() => document.getElementById('waitlist-section')?.scrollIntoView({ behavior: 'smooth' })}
                   >
-                    Únete a la Lista de Espera
+                    Join the Waitlist
                   </Button>
                 </motion.div>
               </motion.div>
@@ -171,25 +171,25 @@ export default function AnotatePage() {
                   className="text-2xl font-bold mb-6"
                   style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
                 >
-                  Lista de Espera
+                  Waitlist
                 </h2>
                 
                 <p 
                   className="text-lg mb-8"
                   style={{ fontFamily: 'Kufam, sans-serif', color: '#5d5d5d' }}
                 >
-                  ¿Cuál es tu facturación mensual?
+                  What is your monthly billing?
                 </p>
 
                 {/* Billing Options */}
                 <div className="space-y-3">
                   {[
-                    { range: "Menos de USD1,000", value: "500", votes: 5 },
+                    { range: "Less than USD1,000", value: "500", votes: 5 },
                     { range: "USD1,000 - USD5,000", value: "1000", votes: 7 },
                     { range: "USD5,000 - USD10,000", value: "5000", votes: 3 },
                     { range: "USD10,000 - USD50,000", value: "10000", votes: 4 },
                     { range: "USD50,000 - USD100,000", value: "50000", votes: 2 },
-                    { range: "Más de USD100,000", value: "100000", votes: 3 }
+                    { range: "More than USD100,000", value: "100000", votes: 3 }
                   ].map((option, index) => (
                     <motion.div
                       key={index}
@@ -218,7 +218,7 @@ export default function AnotatePage() {
                           className="text-xs font-medium"
                           style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
                         >
-                          {option.votes} votos
+                          {option.votes} votes
                         </span>
                       </div>
                     </motion.div>
@@ -229,7 +229,7 @@ export default function AnotatePage() {
                   className="text-sm mt-6 text-center"
                   style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
                 >
-                  Accede al acceso prioritario y exclusivo
+                  Get priority and exclusive access
                 </p>
               </motion.div>
               </div>
@@ -265,14 +265,14 @@ export default function AnotatePage() {
               className="text-2xl font-bold mb-4"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              Lista de Espera
+              Waitlist
             </h2>
             
             <p 
               className="text-lg mb-6"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#5d5d5d' }}
             >
-              ¿Cuál es tu facturación mensual?
+              What is your monthly billing?
             </p>
 
             <div className="mb-6">
@@ -280,14 +280,14 @@ export default function AnotatePage() {
                 className="text-base"
                 style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
               >
-                Seleccionaste:{' '}
+                You selected:{' '}
                 <span style={{ color: '#FF6A00', fontWeight: 'bold' }}>
-                  {selectedBilling === '500' ? 'Menos de USD1,000' :
+                  {selectedBilling === '500' ? 'Less than USD1,000' :
                    selectedBilling === '1000' ? 'USD1,000 - USD5,000' :
                    selectedBilling === '5000' ? 'USD5,000 - USD10,000' :
                    selectedBilling === '10000' ? 'USD10,000 - USD50,000' :
                    selectedBilling === '50000' ? 'USD50,000 - USD100,000' :
-                   'Más de USD100,000'}
+                   'More than USD100,000'}
                 </span>
               </span>
             </div>
@@ -297,7 +297,7 @@ export default function AnotatePage() {
                 <Mail className="absolute left-3 top-3 w-5 h-5" style={{ color: '#5d5d5d' }} />
                           <Input
                             type="email"
-                  placeholder="tu@email.com"
+                  placeholder="your@email.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                   className="pl-12 h-12 text-lg border-2 rounded-xl"
@@ -332,7 +332,7 @@ export default function AnotatePage() {
                   fontFamily: 'Kufam, sans-serif'
                 }}
               >
-                {isSubmitting ? 'Suscribiendo...' : 'Suscribir'}
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
                       </Button>
                     </form>
 
@@ -340,7 +340,7 @@ export default function AnotatePage() {
               className="text-sm mt-4 text-center"
               style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
             >
-              Accede al acceso prioritario y exclusivo
+              Get priority and exclusive access
             </p>
           </motion.div>
         </div>
@@ -374,13 +374,13 @@ export default function AnotatePage() {
               className="text-2xl font-bold mb-4"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
             >
-              ¡Te has unido exitosamente!
+              You have successfully joined!
             </h3>
             <p 
               className="text-lg mb-6"
               style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
             >
-              Te notificaremos cuando MidatoPay esté disponible.
+              We will notify you when MidatoPay is available.
             </p>
             <Button
               onClick={() => setIsSuccess(false)}
@@ -390,7 +390,7 @@ export default function AnotatePage() {
                 fontFamily: 'Kufam, sans-serif'
               }}
             >
-              Cerrar
+              Close
             </Button>
           </motion.div>
         </div>

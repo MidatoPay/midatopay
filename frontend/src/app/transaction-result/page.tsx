@@ -47,7 +47,7 @@ export default function TransactionResultPage() {
         paymentId,
         merchantAddress,
         amountARS: parseInt(amountARS),
-        merchantName: merchantName || 'Comercio',
+        merchantName: merchantName || 'Merchant',
         concept: concept || 'USDT',
         expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 min
         status: status || 'PENDING',
@@ -58,7 +58,7 @@ export default function TransactionResultPage() {
         } : undefined
       })
     } else {
-      setError('Datos de transacción no encontrados')
+      setError('Transaction data not found')
     }
     
     setLoading(false)
@@ -68,9 +68,9 @@ export default function TransactionResultPage() {
     if (transactionData?.blockchainTransaction?.hash) {
       try {
         await navigator.clipboard.writeText(transactionData.blockchainTransaction.hash)
-        toast.success('Hash copiado al portapapeles')
+        toast.success('Hash copied to clipboard')
       } catch (error) {
-        toast.error('Error al copiar hash')
+        toast.error('Error copying hash')
       }
     }
   }
@@ -90,7 +90,7 @@ export default function TransactionResultPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f7f7f6' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando detalles de la transacción...</p>
+          <p className="text-gray-600">Loading transaction details...</p>
         </div>
       </div>
     )
@@ -105,7 +105,7 @@ export default function TransactionResultPage() {
               <p className="text-red-600 mb-4">{error}</p>
               <Button onClick={() => router.push('/scan')} variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver al Scanner
+                Back to Scanner
               </Button>
             </div>
           </CardContent>
@@ -123,7 +123,7 @@ export default function TransactionResultPage() {
             <Link href="/scan" className="mr-4">
               <Button variant="ghost" size="sm" style={{ color: '#1a1a1a' }}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver
+                Back
               </Button>
             </Link>
             <div className="flex items-center space-x-3">
@@ -132,10 +132,10 @@ export default function TransactionResultPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold" style={{ fontFamily: 'Kufam, sans-serif', color: '#1a1a1a' }}>
-                  Transacción Ejecutada
+                  Transaction Executed
                 </h1>
                 <p className="text-sm" style={{ color: '#5d5d5d' }}>
-                  Detalles de la transacción blockchain
+                  Blockchain transaction details
                 </p>
               </div>
             </div>
@@ -155,19 +155,19 @@ export default function TransactionResultPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <CheckCircle className="w-5 h-5" style={{ color: '#10b981' }} />
-                  <span>Detalles del Pago</span>
+                  <span>Payment Details</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Monto</p>
+                    <p className="text-sm font-medium text-gray-500">Amount</p>
                     <p className="text-lg font-bold" style={{ color: '#1a1a1a' }}>
                       ${transactionData.amountARS.toLocaleString()} ARS
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Concepto</p>
+                    <p className="text-sm font-medium text-gray-500">Concept</p>
                     <p className="text-lg font-bold" style={{ color: '#1a1a1a' }}>
                       {transactionData.concept}
                     </p>
@@ -175,7 +175,7 @@ export default function TransactionResultPage() {
                 </div>
 
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Comercio</p>
+                  <p className="text-sm font-medium text-gray-500">Merchant</p>
                   <p className="text-lg font-bold" style={{ color: '#1a1a1a' }}>
                     {transactionData.merchantName}
                   </p>
@@ -189,18 +189,18 @@ export default function TransactionResultPage() {
                 </div>
 
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Dirección del Comercio</p>
+                  <p className="text-sm font-medium text-gray-500">Merchant Address</p>
                   <p className="text-sm font-mono bg-gray-100 p-2 rounded break-all" style={{ color: '#1a1a1a' }}>
                     {transactionData.merchantAddress}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Estado</p>
+                  <p className="text-sm font-medium text-gray-500">Status</p>
                   <div className="flex items-center space-x-2">
                     <div className={`w-3 h-3 rounded-full ${transactionData.status === 'PENDING' ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
                     <span className="font-medium" style={{ color: '#1a1a1a' }}>
-                      {transactionData.status === 'PENDING' ? 'Pendiente' : 'Confirmado'}
+                      {transactionData.status === 'PENDING' ? 'Pending' : 'Confirmed'}
                     </span>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function TransactionResultPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <ExternalLink className="w-5 h-5" style={{ color: '#fe6c1c' }} />
-                  <span>Transacción Blockchain</span>
+                  <span>Blockchain Transaction</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -227,15 +227,15 @@ export default function TransactionResultPage() {
                     <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                       <div className="flex items-center space-x-2 mb-2">
                         <CheckCircle className="w-5 h-5 text-green-600" />
-                        <span className="font-medium text-green-800">Transacción Ejecutada</span>
+                        <span className="font-medium text-green-800">Transaction Executed</span>
                       </div>
                       <p className="text-sm text-green-700">
-                        La transacción se ha enviado exitosamente a la blockchain de Starknet.
+                        The transaction has been successfully sent to the Starknet blockchain.
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-sm font-medium text-gray-500 mb-2">Hash de Transacción</p>
+                      <p className="text-sm font-medium text-gray-500 mb-2">Transaction Hash</p>
                       <div className="flex items-center space-x-2">
                         <p className="text-sm font-mono bg-gray-100 p-2 rounded flex-1 break-all" style={{ color: '#1a1a1a' }}>
                           {transactionData.blockchainTransaction.hash}
@@ -257,7 +257,7 @@ export default function TransactionResultPage() {
                         style={{ background: 'linear-gradient(135deg, #fe6c1c 0%, #fe9c42 100%)' }}
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />
-                        Ver en Starkscan
+                        View on Starkscan
                       </Button>
                     </div>
                   </>
@@ -265,10 +265,10 @@ export default function TransactionResultPage() {
                   <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                     <div className="flex items-center space-x-2 mb-2">
                       <RefreshCw className="w-5 h-5 text-yellow-600 animate-spin" />
-                      <span className="font-medium text-yellow-800">Procesando Transacción</span>
+                      <span className="font-medium text-yellow-800">Processing Transaction</span>
                     </div>
                     <p className="text-sm text-yellow-700">
-                      La transacción está siendo procesada en la blockchain. Esto puede tomar unos minutos.
+                      The transaction is being processed on the blockchain. This may take a few minutes.
                     </p>
                   </div>
                 )}
@@ -280,7 +280,7 @@ export default function TransactionResultPage() {
                     className="w-full"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
-                    Escanear Otro QR
+                    Scan Another QR
                   </Button>
                 </div>
               </CardContent>
