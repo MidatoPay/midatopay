@@ -1,72 +1,72 @@
-#  MidatoPay - Solución de Pagos Web3 para Comerciantes
+#  MidatoPay - Web3 Payment Solution for Merchants
 
 
-**La primera wallet para comerciantes que permite cobrar con QR interoperable y recibir pagos directamente en criptomonedas**
+**The first merchant wallet that allows charging with interoperable QR and receiving payments directly in cryptocurrencies**
 
 
-## 📋 Tabla de Contenidos
+## 📋 Table of Contents
 
-- [🎯 Descripción del Proyecto](#-descripción-del-proyecto)
-- [✨ Características Principales](#-características-principales)
-- [🏗️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
-- [🔧 Tecnologías Utilizadas](#-tecnologías-utilizadas)
-- [📦 Instalación y Configuración](#-instalación-y-configuración)
-- [🚀 Flujo de Usuario Completo](#-flujo-de-usuario-completo)
-- [💎 Contratos Cairo](#-contratos-cairo)
-- [🔗 Integración con Starknet](#-integración-con-starknet)
+- [🎯 Project Description](#-project-description)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture](#️-system-architecture)
+- [🔧 Technologies Used](#-technologies-used)
+- [📦 Installation and Configuration](#-installation-and-configuration)
+- [🚀 Complete User Flow](#-complete-user-flow)
+- [💎 Cairo Contracts](#-cairo-contracts)
+- [🔗 Starknet Integration](#-starknet-integration)
 - [📱 API Endpoints](#-api-endpoints)
 - [🎨 Frontend Features](#-frontend-features)
-- [🔐 Seguridad](#-seguridad)
-- [📊 Base de Datos](#-base-de-datos)
+- [🔐 Security](#-security)
+- [📊 Database](#-database)
 - [🧪 Testing](#-testing)
 - [🚀 Deployment](#-deployment)
-- [👥 Equipo](#-equipo)
-- [📄 Licencia](#-licencia)
+- [👥 Team](#-team)
+- [📄 License](#-license)
 
-## 🎯 Descripción del Proyecto
+## 🎯 Project Description
 
-MidatoPay es una solución revolucionaria de pagos Web3 diseñada específicamente para comerciantes argentinos que buscan protegerse de la inflación. La plataforma permite a los comerciantes recibir pagos en criptomonedas (USDT, BTC, ETH) a través de códigos QR interoperables, mientras mantienen la simplicidad de uso de los pagos tradicionales.
+MidatoPay is a revolutionary Web3 payment solution designed specifically for Argentine merchants seeking protection from inflation. The platform allows merchants to receive payments in cryptocurrencies (USDT, BTC, ETH) through interoperable QR codes, while maintaining the simplicity of traditional payments.
 
-### 🎪 Problema que Resuelve
+### 🎪 Problem it Solves
 
-- **Inflación Argentina**: Los comerciantes pierden valor de sus ingresos debido a la inflación
-- **Barreras de Entrada**: Las soluciones crypto existentes son complejas para comerciantes tradicionales
-- **Interoperabilidad**: Falta de estándares QR interoperables en el ecosistema crypto
-- **Conversión de Monedas**: Dificultad para convertir ARS a crypto de manera eficiente
+- **Argentine Inflation**: Merchants lose value of their income due to inflation
+- **Entry Barriers**: Existing crypto solutions are complex for traditional merchants
+- **Interoperability**: Lack of interoperable QR standards in the crypto ecosystem
+- **Currency Conversion**: Difficulty converting ARS to crypto efficiently
 
-### 💡 Solución Propuesta
+### 💡 Proposed Solution
 
-MidatoPay ofrece una plataforma completa que incluye:
-- Wallet automática para comerciantes
-- QR codes interoperables con estándar EMVCo TLV
-- Oracle de precios en tiempo real (ARS ↔ USDT)
-- Integración directa con Starknet
-- Interfaz simple y familiar
+MidatoPay offers a complete platform that includes:
+- Automatic wallet for merchants
+- Interoperable QR codes with EMVCo TLV standard
+- Real-time price oracle (ARS ↔ USDT)
+- Direct integration with Starknet
+- Simple and familiar interface
 
-## ✨ Características Principales
+## ✨ Key Features
 
-### 🛡️ Protección contra Inflación
-- Conversión automática ARS → USDT usando Oracle de Starknet
-- Precios en tiempo real actualizados cada 30 segundos
-- Protección del valor de los ingresos del comerciante
+### 🛡️ Inflation Protection
+- Automatic ARS → USDT conversion using Starknet Oracle
+- Real-time prices updated every 30 seconds
+- Protection of merchant income value
 
-### ⚡ Transacciones Instantáneas
-- Integración directa con Starknet L2
-- Confirmaciones rápidas (< 2 minutos)
-- Gas fees mínimos comparado con Ethereum
+### ⚡ Instant Transactions
+- Direct integration with Starknet L2
+- Fast confirmations (< 2 minutes)
+- Minimal gas fees compared to Ethereum
 
-### 🔗 QR Interoperable
-- Estándar EMVCo TLV implementado
-- Compatible con cualquier wallet que soporte el estándar
-- Datos estructurados: merchant address, amount, payment ID
+### 🔗 Interoperable QR
+- EMVCo TLV standard implemented
+- Compatible with any wallet that supports the standard
+- Structured data: merchant address, amount, payment ID
 
-### 🎯 Experiencia de Usuario Simplificada
-- Dashboard intuitivo para comerciantes
-- Generación de QR con un click
-- Escaneo fácil desde cualquier dispositivo
-- Notificaciones en tiempo real
+### 🎯 Simplified User Experience
+- Intuitive dashboard for merchants
+- QR generation with one click
+- Easy scanning from any device
+- Real-time notifications
 
-## 🏗️ Arquitectura del Sistema
+## 🏗️ System Architecture
 
 ```mermaid
 graph TB
@@ -102,85 +102,85 @@ graph TB
     H --> P
 ```
 
-## 🔧 Tecnologías Utilizadas
+## 🔧 Technologies Used
 
 ### Frontend
-- **Next.js 14** - Framework React con App Router
-- **TypeScript** - Tipado estático
-- **Tailwind CSS** - Estilos utilitarios
-- **Framer Motion** - Animaciones
-- **React Hook Form** - Manejo de formularios
-- **React Toastify** - Notificaciones
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Static typing
+- **Tailwind CSS** - Utility styles
+- **Framer Motion** - Animations
+- **React Hook Form** - Form handling
+- **React Toastify** - Notifications
 
 ### Backend
-- **Node.js** - Runtime de JavaScript
-- **Express.js** - Framework web
-- **Prisma** - ORM para base de datos
-- **WebSocket** - Comunicación en tiempo real
-- **Starkli** - CLI para Starknet
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **Prisma** - Database ORM
+- **WebSocket** - Real-time communication
+- **Starkli** - CLI for Starknet
 
 ### Blockchain
-- **Starknet Sepolia** - Red de prueba
-- **Cairo** - Lenguaje de contratos inteligentes
-- **OpenZeppelin** - Bibliotecas de contratos
+- **Starknet Sepolia** - Test network
+- **Cairo** - Smart contract language
+- **OpenZeppelin** - Contract libraries
 
-### Base de Datos
-- **PostgreSQL** - Base de datos relacional
-- **Prisma Migrate** - Migraciones de esquema
+### Database
+- **PostgreSQL** - Relational database
+- **Prisma Migrate** - Schema migrations
 
-## 📦 Instalación y Configuración
+## 📦 Installation and Configuration
 
-### Prerrequisitos
+### Prerequisites
 - Node.js 18+
 - PostgreSQL 15+
 - Git
 - Starkli CLI
 
 
-## 🚀 Flujo de Usuario Completo
+## 🚀 Complete User Flow
 
-### 1. 🏠 Página de Inicio
-- Landing page con información del producto
-- Call-to-action para registro
-- Estadísticas y características principales
+### 1. 🏠 Homepage
+- Landing page with product information
+- Call-to-action for registration
+- Statistics and key features
 
-### 2. 🔐 Registro y Login
-- **Registro**: Email, nombre, teléfono
-- **Login**: Autenticación JWT
+### 2. 🔐 Registration and Login
+- **Registration**: Email, name, phone
+- **Login**: JWT authentication
 - **Roles**: MERCHANT, ADMIN
 
-### 3. 💼 Dashboard del Comerciante
-- **Vista general**: Estadísticas de ventas
-- **Balance USDT**: Saldo actual en tiempo real
-- **Historial**: Transacciones recientes
+### 3. 💼 Merchant Dashboard
+- **Overview**: Sales statistics
+- **USDT Balance**: Current real-time balance
+- **History**: Recent transactions
 
-### 4. 🔑 Configuración de Wallet
-- **Generar Wallet**: Creación automática de wallet Starknet
-- **Importar Wallet**: Usar wallet existente
-- **Verificar Balance**: Conexión con contrato USDT
-- **Seguridad**: Encriptación de claves privadas
+### 4. 🔑 Wallet Setup
+- **Generate Wallet**: Automatic Starknet wallet creation
+- **Import Wallet**: Use existing wallet
+- **Verify Balance**: Connection with USDT contract
+- **Security**: Private key encryption
 
-### 5. 💰 Gestión de Pagos
-- **Agregar Monto**: Input de cantidad en ARS
-- **Conversión Automática**: Oracle ARS → USDT
-- **Generar QR**: Código QR interoperable
-- **Compartir**: Enlace o imagen del QR
+### 5. 💰 Payment Management
+- **Add Amount**: ARS quantity input
+- **Automatic Conversion**: Oracle ARS → USDT
+- **Generate QR**: Interoperable QR code
+- **Share**: QR link or image
 
-### 6. 📱 Escaneo de QR
-- **Cámara**: Escaneo automático de QR
-- **Validación**: Verificación de datos EMVCo TLV
-- **Procesamiento**: Ejecución de transacción Starknet
-- **Confirmación**: Hash y link a Starkscan
+### 6. 📱 QR Scanning
+- **Camera**: Automatic QR scanning
+- **Validation**: EMVCo TLV data verification
+- **Processing**: Starknet transaction execution
+- **Confirmation**: Hash and link to Starkscan
 
-### 7. ✅ Resultado de Transacción
-- **Estado**: Pendiente → Completado
-- **Hash**: Enlace a explorador de blockchain
-- **Detalles**: Monto, comercio, timestamp
-- **Acciones**: Copiar hash, escanear otro QR
+### 7. ✅ Transaction Result
+- **Status**: Pending → Completed
+- **Hash**: Link to blockchain explorer
+- **Details**: Amount, merchant, timestamp
+- **Actions**: Copy hash, scan another QR
 
-## 💎 Contratos Cairo
+## 💎 Cairo Contracts
 
-### Oracle de Precios (`starknetOracleService.js`)
+### Price Oracle (`starknetOracleService.js`)
 ```cairo
 #[contract]
 mod PriceOracle {
@@ -195,9 +195,9 @@ mod PriceOracle {
     
     #[external(v0)]
     fn quote_ars_to_usdt(ref self: ContractState, amount_ars: u256) -> u256 {
-        // Implementación del Oracle
+        // Oracle implementation
         let scaled_amount = amount_ars * self.scale.read();
-        // Lógica de conversión ARS → USDT
+        // ARS → USDT conversion logic
     }
 }
 ```
@@ -223,24 +223,25 @@ mod PaymentGateway {
         token_address: ContractAddress,
         payment_id: felt252
     ) {
-        // Transferir USDT al merchant
-        // Registrar transacción
-        // Emitir evento
+        // Transfer USDT to merchant
+        // Register transaction
+        // Emit event
     }
 }
 ```
 
-### Características de los Contratos
-- **Gas Optimizado**: Uso eficiente de storage y compute
-- **Seguridad**: Validaciones y checks de seguridad
-- **Escalabilidad**: Diseño para alto volumen de transacciones
-- **Interoperabilidad**: Compatible con estándares ERC-20
+### Contract Features
+- **Gas Optimized**: Efficient use of storage and compute
+- **Security**: Validations and security checks
+- **Scalability**: Designed for high transaction volume
+- **Interoperability**: Compatible with ERC-20 standards
 
-## 🔗 Integración con Starknet
+## 🔗 Starknet Integration
 
 ### Starkli CLI Integration
 ```javascript
-// Ejecución automática de transacciones
+```javascript
+// Automatic transaction execution
 const command = `starkli invoke ${contractAddress} pay ${merchantAddress} u256:${amount} ${tokenAddress} ${paymentId} --account ${accountPath} --keystore ${keystorePath} --keystore-password ${password} --network sepolia`;
 
 const { stdout, stderr } = await execAsync(command, {
@@ -248,26 +249,26 @@ const { stdout, stderr } = await execAsync(command, {
 });
 ```
 
-### Características de la Integración
-- **Transacciones Automáticas**: Ejecución sin intervención manual
-- **Manejo de Errores**: Recuperación automática de errores
-- **Dry-run**: Validación antes de ejecución real
-- **Hash Extraction**: Extracción automática de transaction hash
+### Integration Features
+- **Automatic Transactions**: Execution without manual intervention
+- **Error Handling**: Automatic error recovery
+- **Dry-run**: Validation before real execution
+- **Hash Extraction**: Automatic transaction hash extraction
 
-### Redes Soportadas
-- **Starknet Sepolia**: Red de pruebas (actual)
-- **Starknet Mainnet**: Producción (futuro)
+### Supported Networks
+- **Starknet Sepolia**: Test network (current)
+- **Starknet Mainnet**: Production (future)
 
 ## 📱 API Endpoints
 
-### Autenticación
+### Authentication
 ```http
 POST /api/auth/register
 POST /api/auth/login
 POST /api/auth/logout
 ```
 
-### Usuario
+### User
 ```http
 GET /api/users/profile
 PUT /api/users/profile
@@ -275,7 +276,7 @@ POST /api/users/wallet/generate
 POST /api/users/wallet/import
 ```
 
-### Pagos
+### Payments
 ```http
 POST /api/midatopay/generate-qr
 POST /api/midatopay/scan-qr
@@ -291,55 +292,55 @@ GET /api/oracle/quote/:amount
 
 ### WebSocket
 ```javascript
-// Conexión en tiempo real
+// Real-time connection
 const ws = new WebSocket('ws://localhost:3001/ws');
 ws.onmessage = (event) => {
   const data = JSON.parse(event.data);
-  // Actualizar UI en tiempo real
+  // Update UI in real-time
 };
 ```
 
 ## 🎨 Frontend Features
 
-### Componentes Principales
-- **Dashboard**: Vista principal del comerciante
-- **QRModal**: Generación y visualización de QR
-- **WalletSetup**: Configuración de wallet
-- **TransactionResult**: Resultado de transacciones
-- **CustomHeader**: Navegación personalizada
+### Main Components
+- **Dashboard**: Main merchant view
+- **QRModal**: QR generation and display
+- **WalletSetup**: Wallet configuration
+- **TransactionResult**: Transaction results
+- **CustomHeader**: Custom navigation
 
-### Hooks Personalizados
-- **useOracleConversion**: Conversión ARS → USDT
-- **useWebSocket**: Comunicación en tiempo real
-- **useWalletManager**: Gestión de wallets
+### Custom Hooks
+- **useOracleConversion**: ARS → USDT conversion
+- **useWebSocket**: Real-time communication
+- **useWalletManager**: Wallet management
 
 ### Responsive Design
-- **Mobile First**: Diseño optimizado para móviles
-- **Tablet**: Adaptación para tablets
-- **Desktop**: Experiencia completa en desktop
+- **Mobile First**: Design optimized for mobile devices
+- **Tablet**: Adaptation for tablets
+- **Desktop**: Complete desktop experience
 
-## 🔐 Seguridad
+## 🔐 Security
 
-### Encriptación
-- **Claves Privadas**: Encriptadas con AES-256
-- **JWT Tokens**: Firmados con secret seguro
-- **HTTPS**: Comunicación encriptada
+### Encryption
+- **Private Keys**: Encrypted with AES-256
+- **JWT Tokens**: Signed with secure secret
+- **HTTPS**: Encrypted communication
 
-### Validaciones
-- **Input Validation**: Sanitización de inputs
-- **Rate Limiting**: Protección contra spam
-- **CORS**: Configuración de dominios permitidos
+### Validations
+- **Input Validation**: Input sanitization
+- **Rate Limiting**: Protection against spam
+- **CORS**: Allowed domains configuration
 
-### Base de Datos
-- **Prisma**: ORM con protección SQL injection
-- **Migrations**: Control de versiones de esquema
-- **Backups**: Respaldos automáticos
+### Database
+- **Prisma**: ORM with SQL injection protection
+- **Migrations**: Schema version control
+- **Backups**: Automatic backups
 
-## 📊 Base de Datos
+## 📊 Database
 
-### Esquema Principal
+### Main Schema
 ```sql
--- Usuarios (Comerciantes)
+-- Users (Merchants)
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -356,7 +357,7 @@ CREATE TABLE users (
   updatedAt TIMESTAMP DEFAULT NOW()
 );
 
--- Pagos
+-- Payments
 CREATE TABLE payments (
   id TEXT PRIMARY KEY,
   amount DECIMAL(18,8) NOT NULL,
@@ -371,7 +372,7 @@ CREATE TABLE payments (
   updatedAt TIMESTAMP DEFAULT NOW()
 );
 
--- Transacciones Blockchain
+-- Blockchain Transactions
 CREATE TABLE transactions (
   id TEXT PRIMARY KEY,
   paymentId BIGINT NOT NULL,
@@ -392,7 +393,7 @@ CREATE TABLE transactions (
 );
 ```
 
-### Desarrolladores
+### Developers
 - **Frontend**: Next.js, React, TypeScript
 - **Backend**: Node.js, Express, Prisma
 - **Blockchain**: Cairo, Starknet, Starkli
@@ -402,6 +403,6 @@ CREATE TABLE transactions (
 ---
 
 
-**🚀 MidatoPay - Protegiendo a los comerciantes de la inflación con tecnología Web3**
+**🚀 MidatoPay - Protecting merchants from inflation with Web3 technology**
 
 
