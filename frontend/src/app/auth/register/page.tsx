@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useAuthActions } from '@/store/auth'
+import { useAuth, useAuthActions, useAuthStore } from '@/store/auth'
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
 
 const registerSchema = z.object({
@@ -34,7 +34,9 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [basicData, setBasicData] = useState({ name: '', email: '' })
   const router = useRouter()
-  const { register: registerUser, isLoading, error, clearError } = useAuthActions()
+  const { isLoading } = useAuth()
+  const error = useAuthStore((state) => state.error)
+  const { register: registerUser, clearError } = useAuthActions()
 
   const {
     register,
@@ -75,7 +77,7 @@ export default function RegisterPage() {
 
   // Login social (placeholder para futuras expansiones)
   const handleSocialLogin = async (provider: 'apple' | 'google') => {
-    toast.info(`Registro con ${provider} próximamente disponible con Cavos Aegis`)
+    toast(`Registro con ${provider} próximamente disponible con Cavos Aegis`)
   }
 
   const onSubmit = async (data: RegisterForm) => {
