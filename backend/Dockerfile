@@ -1,5 +1,8 @@
 FROM node:18-alpine
 
+# Instalar OpenSSL para Prisma (necesario para libssl.so.1.1)
+RUN apk add --no-cache openssl1.1-compat
+
 # Establecer directorio de trabajo
 WORKDIR /app
 

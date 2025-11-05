@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 class StarknetService {
   constructor() {
     this.provider = new RpcProvider({
-      nodeUrl: process.env.STARKNET_RPC_URL || "https://starknet-sepolia.public.blastapi.io/rpc/v0_7"
+      nodeUrl: process.env.STARKNET_RPC_URL || "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_9/b6oJemkCmlgEGq1lXC5uTXwOHZA14WNP"
     });
     
     this.paymentGatewayAddress = process.env.STARKNET_PAYMENT_GATEWAY_ADDRESS;
