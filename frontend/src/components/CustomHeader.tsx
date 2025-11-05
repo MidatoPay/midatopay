@@ -19,7 +19,7 @@ export default function CustomHeader() {
 
   return (
         <header 
-          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${
             isScrolled ? 'py-2' : 'py-3'
           }`}
           style={{
@@ -33,45 +33,45 @@ export default function CustomHeader() {
               : '0 4px 16px rgba(0, 0, 0, 0.1)'
           }}
         >
-      <div className="w-full px-6">
+      <div className="w-full px-4 sm:px-6">
         <nav className="flex items-center justify-between w-full">
           {/* Logo - Completamente a la izquierda */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-white rounded-full flex items-center justify-center shadow-lg">
                 <Image 
                   src="/logo.png" 
                   alt="MidatoPay Logo" 
-                  width={isScrolled ? 28 : 32} 
-                  height={isScrolled ? 28 : 32}
-                  className="object-contain transition-all duration-300"
+                  width={isScrolled ? 24 : 28} 
+                  height={isScrolled ? 24 : 28}
+                  className="object-contain transition-all duration-300 sm:w-7 sm:h-7"
                 />
               </div>
-              <h1 className="text-xl font-bold" style={{ fontFamily: 'Kufam, sans-serif', color: '#FFFFFF' }}>
+              <h1 className="text-lg sm:text-xl font-bold" style={{ fontFamily: 'Kufam, sans-serif', color: '#FFFFFF' }}>
                 MidatoPay
               </h1>
             </Link>
           </div>
 
           {/* Menú Central - Desktop */}
-          <div className="hidden md:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
+          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8 absolute left-1/2 transform -translate-x-1/2">
             <Link 
               href="/" 
-              className="text-base font-medium transition-all duration-300 hover:text-white hover:scale-105"
+              className="text-sm xl:text-base font-medium transition-all duration-300 hover:text-white hover:scale-105 whitespace-nowrap"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#FFFFFF' }}
             >
               Home
             </Link>
             <Link 
               href="/anotate" 
-              className="text-base font-medium transition-all duration-300 hover:text-white hover:scale-105"
+              className="text-sm xl:text-base font-medium transition-all duration-300 hover:text-white hover:scale-105 whitespace-nowrap"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#FFFFFF' }}
             >
               Join Waitlist
             </Link>
             <Link 
               href="/aprende" 
-              className="text-base font-medium transition-all duration-300 hover:text-white hover:scale-105"
+              className="text-sm xl:text-base font-medium transition-all duration-300 hover:text-white hover:scale-105 whitespace-nowrap"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#FFFFFF' }}
             >
               Learn
@@ -79,23 +79,24 @@ export default function CustomHeader() {
           </div>
 
           {/* Botones Derecha - Completamente a la derecha */}
-          <div className="flex items-center space-x-4 ml-auto">
+          <div className="hidden sm:flex items-center space-x-3 md:space-x-4 ml-auto">
             <Link 
               href="/auth/login"
-              className="px-5 py-2 text-base font-medium transition-all duration-300 hover:text-white hover:scale-105"
+              className="px-3 md:px-5 py-2 text-sm md:text-base font-medium transition-all duration-300 hover:text-white hover:scale-105 whitespace-nowrap"
               style={{ fontFamily: 'Kufam, sans-serif', color: '#FFFFFF' }}
             >
               Login
             </Link>
             <Link 
               href="/auth/register"
-              className="px-5 py-2 bg-white text-orange-500 text-base font-medium rounded-full transition-all duration-300 hover:bg-gray-100 hover:scale-105 hover:shadow-lg flex items-center gap-2"
+              className="px-3 md:px-5 py-2 bg-white text-orange-500 text-sm md:text-base font-medium rounded-full transition-all duration-300 hover:bg-gray-100 hover:scale-105 hover:shadow-lg flex items-center gap-1 md:gap-2 whitespace-nowrap"
               style={{ fontFamily: 'Kufam, sans-serif' }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              Sign Up
+              <span className="hidden sm:inline">Sign Up</span>
+              <span className="sm:hidden">Sign</span>
             </Link>
           </div>
 
@@ -120,7 +121,7 @@ export default function CustomHeader() {
         {/* Menú Mobile Desplegable */}
             {isMenuOpen && (
               <div 
-                className="md:hidden mt-4 py-4 border-t border-white border-opacity-20 transition-all duration-300"
+                className="md:hidden mt-4 py-4 border-t border-white border-opacity-20 transition-all duration-300 relative z-[65]"
                 style={{
                   background: 'rgba(255, 106, 0, 0.95)',
                   backdropFilter: 'blur(20px) saturate(180%)',
