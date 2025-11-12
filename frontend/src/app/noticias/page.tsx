@@ -5,12 +5,22 @@ import Link from 'next/link'
 import Image from 'next/image'
 import CustomHeader from '@/components/CustomHeader'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { Calendar, ArrowLeft, Trophy, Rocket, Building2 } from 'lucide-react'
+import { Calendar, ArrowLeft, Trophy, Rocket, Building2, Globe } from 'lucide-react'
 
 export default function NewsPage() {
   const { t } = useLanguage()
 
   const articles = [
+    {
+      id: 'startupWorldCup',
+      title: t.news.articles.startupWorldCup.title,
+      date: t.news.articles.startupWorldCup.date,
+      excerpt: t.news.articles.startupWorldCup.excerpt,
+      content: t.news.articles.startupWorldCup.content,
+      icon: <Globe className="w-6 h-6" style={{ color: '#FF6A00' }} />,
+      gradient: 'from-green-500 to-blue-600',
+      image: '/noticias/crecimientoar.jpeg'
+    },
     {
       id: 'startupHouse',
       title: t.news.articles.startupHouse.title,

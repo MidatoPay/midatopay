@@ -24,15 +24,14 @@ export default function WaitlistPage() {
   const [error, setError] = useState('')
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [selectedBilling, setSelectedBilling] = useState('')
-
-  const billingOptions = [
+  const [billingOptions, setBillingOptions] = useState([
     { range: t.waitlist.billingOptions.lessThan1000, value: "500", votes: 5 },
     { range: t.waitlist.billingOptions["1000to5000"], value: "1000", votes: 7 },
     { range: t.waitlist.billingOptions["5000to10000"], value: "5000", votes: 3 },
     { range: t.waitlist.billingOptions["10000to50000"], value: "10000", votes: 4 },
     { range: t.waitlist.billingOptions["50000to100000"], value: "50000", votes: 2 },
     { range: t.waitlist.billingOptions.moreThan100000, value: "100000", votes: 3 }
-  ]
+  ])
 
   const getBillingRange = (value: string) => {
     const option = billingOptions.find(opt => opt.value === value)
@@ -42,6 +41,7 @@ export default function WaitlistPage() {
   const handleBillingSelection = (billing: string) => {
     setSelectedBilling(billing)
     setMonthlyBilling(billing)
+    setError('') // Limpiar errores previos
     setShowEmailModal(true)
   }
 
@@ -50,15 +50,39 @@ export default function WaitlistPage() {
     setIsSubmitting(true)
     setError('')
 
+    // Validación básica del email en el frontend
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const trimmedEmail = email.trim()
+    
+    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+      setError('Por favor ingresa un email válido')
+      setIsSubmitting(false)
+      return
+    }
+
+    // Validar que monthlyBilling esté establecido
+    if (!monthlyBilling || monthlyBilling === '') {
+      setError('Por favor selecciona una opción de facturación')
+      setIsSubmitting(false)
+      return
+    }
+
+    const billingValue = parseInt(monthlyBilling)
+    if (isNaN(billingValue) || billingValue < 500) {
+      setError('El valor de facturación no es válido')
+      setIsSubmitting(false)
+      return
+    }
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/waitlist`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/waitlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
-          monthly_billing_usd: parseInt(monthlyBilling)
+          email: trimmedEmail,
+          monthly_billing_usd: billingValue
         }),
       })
 
@@ -67,9 +91,25 @@ export default function WaitlistPage() {
         setEmail('')
         setMonthlyBilling('')
         setShowEmailModal(false)
+        
+        // Actualizar los votos de la opción seleccionada
+        setBillingOptions(prevOptions => 
+          prevOptions.map(option => 
+            option.value === monthlyBilling 
+              ? { ...option, votes: option.votes + 1 }
+              : option
+          )
+        )
+        
+        // Disparar evento para actualizar estadísticas en otras páginas
+        window.dispatchEvent(new CustomEvent('waitlist-updated'))
       } else {
         const data = await response.json()
-        setError(data.message || t.waitlist.errors.joinError)
+        // Mostrar el error específico del backend si está disponible
+        const errorMessage = data.details && data.details.length > 0 
+          ? data.details[0].msg || data.message || t.waitlist.errors.joinError
+          : data.message || t.waitlist.errors.joinError
+        setError(errorMessage)
       }
     } catch (err) {
       setError(t.waitlist.errors.connectionError)
@@ -192,39 +232,46 @@ export default function WaitlistPage() {
 
                   {/* Billing Options */}
                   <div className="space-y-3">
-                    {billingOptions.map((option, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                        className="cursor-pointer px-4 py-3 border border-gray-200 rounded-lg hover:border-orange-500 hover:shadow-sm transition-all duration-300 bg-white hover:bg-orange-50"
-                        onClick={() => handleBillingSelection(option.value)}
-                      >
-                        <div className="text-center mb-2">
-                          <span 
-                            className="font-medium text-sm"
-                            style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
-                          >
-                            {option.range}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
-                          <div 
-                            className="bg-orange-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${(option.votes / 7) * 100}%` }}
-                          ></div>
-                        </div>
-                        <div className="text-center">
-                          <span 
-                            className="text-xs font-medium"
-                            style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
-                          >
-                            {option.votes} {t.waitlist.votes}
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))}
+                    {billingOptions.map((option, index) => {
+                      // Calcular el máximo de votos para normalizar las barras
+                      const maxVotes = Math.max(...billingOptions.map(opt => opt.votes), 7)
+                      // Asegurar que el porcentaje nunca supere el 100%
+                      const percentage = Math.min((option.votes / maxVotes) * 100, 100)
+                      
+                      return (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                          className="cursor-pointer px-4 py-3 border border-gray-200 rounded-lg hover:border-orange-500 hover:shadow-sm transition-all duration-300 bg-white hover:bg-orange-50"
+                          onClick={() => handleBillingSelection(option.value)}
+                        >
+                          <div className="text-center mb-2">
+                            <span 
+                              className="font-medium text-sm"
+                              style={{ fontFamily: 'Kufam, sans-serif', color: '#2C2C2C' }}
+                            >
+                              {option.range}
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 mb-1 overflow-hidden">
+                            <div 
+                              className="bg-orange-500 h-2 rounded-full transition-all duration-500"
+                              style={{ width: `${percentage}%`, maxWidth: '100%' }}
+                            ></div>
+                          </div>
+                          <div className="text-center">
+                            <span 
+                              className="text-xs font-medium"
+                              style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
+                            >
+                              {option.votes} {t.waitlist.votes}
+                            </span>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
                   </div>
 
                   <p 
@@ -296,11 +343,14 @@ export default function WaitlistPage() {
                   type="email"
                   placeholder={t.waitlist.modal.emailPlaceholder}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setError('') // Limpiar error cuando el usuario escribe
+                  }}
                   className="pl-12 h-12 text-lg border-2 rounded-xl"
                   style={{ 
                     backgroundColor: '#FFFFFF', 
-                    borderColor: '#E5E7EB',
+                    borderColor: error ? '#DC2626' : '#E5E7EB',
                     color: '#2C2C2C'
                   }}
                   required

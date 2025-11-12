@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import CustomHeader from '@/components/CustomHeader'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { Calendar, ArrowLeft, Trophy, Building2 } from 'lucide-react'
+import { Calendar, ArrowLeft, Trophy, Building2, Globe } from 'lucide-react'
 import { useEffect } from 'react'
 
 export default function NewsArticlePage({ params }: { params: { id: string } }) {
@@ -14,7 +14,7 @@ export default function NewsArticlePage({ params }: { params: { id: string } }) 
 
   // Cargar script de Twitter cuando el componente se monte
   useEffect(() => {
-    if (id === 'hackathon') {
+    if (id === 'hackathon' || id === 'startupWorldCup') {
       const script = document.createElement('script')
       script.src = 'https://platform.twitter.com/widgets.js'
       script.async = true
@@ -40,6 +40,14 @@ export default function NewsArticlePage({ params }: { params: { id: string } }) 
     image?: string
     video?: string
   }> = {
+    startupWorldCup: {
+      title: t.news.articles.startupWorldCup.title,
+      date: t.news.articles.startupWorldCup.date,
+      content: t.news.articles.startupWorldCup.content,
+      icon: <Globe className="w-8 h-8" style={{ color: '#FF6A00' }} />,
+      gradient: 'from-green-500 to-blue-600',
+      image: '/noticias/crecimientoar.jpeg'
+    },
     startupHouse: {
       title: t.news.articles.startupHouse.title,
       date: t.news.articles.startupHouse.date,
@@ -279,6 +287,39 @@ export default function NewsArticlePage({ params }: { params: { id: string } }) 
                       }}
                     />
                   </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Social Media Posts Section - Solo para startupWorldCup */}
+          {id === 'startupWorldCup' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="my-12"
+            >
+              <div className="flex justify-center w-full">
+                <div className="w-full max-w-[550px]">
+                  <blockquote className="twitter-tweet" data-theme="light">
+                    <p lang="en" dir="ltr">
+                      Big news! 🎉<br/>
+                      MidatoPay has been selected to compete in the Startup World Cup qualifiers at{' '}
+                      <a href="https://twitter.com/AlephHub?ref_src=twsrc%5Etfw">@AlephHub</a>{' '}
+                      in Buenos Aires by{' '}
+                      <a href="https://twitter.com/crecimientoar?ref_src=twsrc%5Etfw">@crecimientoar</a>
+                      <br/><br/>
+                      Another step toward our dream of bringing financial inclusion and seamless crypto-fiat payments to all of LATAM 🌎
+                      <br/><br/>
+                      Grateful to our team{' '}
+                      <a href="https://t.co/uFIL30XjSy">pic.twitter.com/uFIL30XjSy</a>
+                    </p>
+                    &mdash; MidatoPay (@MiDatoPay){' '}
+                    <a href="https://twitter.com/MiDatoPay/status/1987607475009524072?ref_src=twsrc%5Etfw">
+                      November 9, 2025
+                    </a>
+                  </blockquote>
                 </div>
               </div>
             </motion.div>

@@ -5,8 +5,9 @@ import esTranslations from '@/locales/es.json'
 import enTranslations from '@/locales/en.json'
 import itTranslations from '@/locales/it.json'
 import ptTranslations from '@/locales/pt.json'
+import cnTranslations from '@/locales/cn.json'
 
-type Language = 'es' | 'en' | 'it' | 'pt'
+type Language = 'es' | 'en' | 'it' | 'pt' | 'cn'
 
 type Translations = typeof esTranslations
 
@@ -23,6 +24,7 @@ const translations = {
   en: enTranslations,
   it: itTranslations,
   pt: ptTranslations,
+  cn: cnTranslations,
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -34,9 +36,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const savedLanguage = localStorage.getItem('language') as Language | null
     const browserLanguage = navigator.language.split('-')[0] as Language
     
-    if (savedLanguage && ['es', 'en', 'it', 'pt'].includes(savedLanguage)) {
+    if (savedLanguage && ['es', 'en', 'it', 'pt', 'cn'].includes(savedLanguage)) {
       setLanguageState(savedLanguage)
-    } else if (['es', 'en', 'it', 'pt'].includes(browserLanguage)) {
+    } else if (['es', 'en', 'it', 'pt', 'cn'].includes(browserLanguage)) {
       setLanguageState(browserLanguage)
     } else {
       // Por defecto español si no se detecta ninguno soportado

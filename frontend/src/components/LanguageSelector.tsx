@@ -9,6 +9,7 @@ const languages = [
   { code: 'es', name: 'Español', flag: '/lenguajes/ar.svg' },
   { code: 'it', name: 'Italiano', flag: '/lenguajes/it.svg' },
   { code: 'pt', name: 'Português', flag: '/lenguajes/br.svg' },
+  { code: 'cn', name: '中文', flag: '/lenguajes/cn.svg' },
 ]
 
 export default function LanguageSelector() {
@@ -35,7 +36,7 @@ export default function LanguageSelector() {
     }
   }, [isOpen])
 
-  const handleLanguageChange = (langCode: 'es' | 'en' | 'it' | 'pt') => {
+  const handleLanguageChange = (langCode: 'es' | 'en' | 'it' | 'pt' | 'cn') => {
     setLanguage(langCode)
     setIsOpen(false)
   }
@@ -84,7 +85,7 @@ export default function LanguageSelector() {
           {languages.map((lang) => (
             <button
               key={lang.code}
-              onClick={() => handleLanguageChange(lang.code as 'es' | 'en' | 'it' | 'pt')}
+              onClick={() => handleLanguageChange(lang.code as 'es' | 'en' | 'it' | 'pt' | 'cn')}
               className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-200 hover:bg-white hover:bg-opacity-20 ${
                 language === lang.code ? 'bg-white bg-opacity-15' : ''
               }`}

@@ -56,7 +56,11 @@
     },
     "howItWorks": {
       "title": "How MidatoPay works",
+      "titleLine1": "How",
+      "titleLine2": "MidatoPay",
       "subtitle": "A simple and secure process to protect your sales from inflation",
+      "subtitleLine1": "A simple and secure process to protect",
+      "subtitleLine2": "your sales from inflation",
       "description": {
         "line1": "A dynamic cycle",
         "line2": "iterative focused on",
@@ -84,7 +88,7 @@
     "cta": {
       "title": "Ready to protect your sales?",
       "description": "Join the merchants who are already protecting their income from inflation.",
-      "button": "Get Started"
+      "button": "Start"
     },
     "footer": {
       "description": "Protect your sales from inflation with cryptocurrency payments. Automatic conversion and blockchain security for your business.",
@@ -98,7 +102,7 @@
       "contact": "Contact",
       "documentation": "Documentation",
       "systemStatus": "System Status",
-      "copyright": "© 2024 MidatoPay. All rights reserved.",
+      "copyright": "© 2025 MidatoPay. All rights reserved.",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "cookies": "Cookies"
@@ -114,6 +118,97 @@
         "title": "Unnecessary technical complexity",
         "description": "Customers arrive at the store and cannot understand how to pay with cryptocurrencies. Everything seems complicated, they need wallets, technical knowledge, and end up abandoning the purchase."
       }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "mainTitle": "Have a question?",
+      "subtitle": "Everything you need to know about MidatoPay",
+      "categories": {
+        "general": "General",
+        "pagos": "Payments"
+      },
+      "items": {
+        "general": [
+          {
+            "question": "How does MidatoPay work?",
+            "answer": "MidatoPay allows merchants to generate QR codes that customers can scan. Customers pay in Argentine pesos using their preferred method, and MidatoPay automatically converts those pesos to cryptocurrencies, protecting the value of sales against inflation."
+          },
+          {
+            "question": "What cryptocurrencies does MidatoPay accept?",
+            "answer": "MidatoPay accepts multiple cryptocurrencies including USDT, BTC, and ETH. The merchant can choose which cryptocurrency they want to receive payments in when generating the QR code."
+          },
+          {
+            "question": "Do I need technical knowledge to use MidatoPay?",
+            "answer": "No, MidatoPay is designed to be simple and easy to use. You just need to generate a QR code and your customers can pay normally. The conversion to cryptocurrencies is automatic and transparent."
+          }
+        ],
+        "pagos": [
+          {
+            "question": "How long does the conversion take?",
+            "answer": "The conversion from Argentine pesos to cryptocurrencies is instantaneous. Once the customer completes the payment, the merchant receives confirmation in seconds."
+          },
+          {
+            "question": "Is it safe to use MidatoPay?",
+            "answer": "Yes, MidatoPay uses blockchain technology to ensure transaction security. All conversions are performed securely and transparently, with confirmations on the blockchain."
+          },
+          {
+            "question": "Is there any cost to use MidatoPay?",
+            "answer": "MidatoPay offers a transparent solution with competitive fees. Costs are based on transaction volume and are clearly communicated before each operation."
+          }
+        ]
+      },
+      "askQuestion": {
+        "button": "Ask a question",
+        "title": "Ask your question",
+        "questionLabel": "Your question",
+        "questionPlaceholder": "Write your question here...",
+        "contextLabel": "Context (optional)",
+        "contextPlaceholder": "Why are you asking this question? Share the context that will help us understand better...",
+        "submit": "Submit question",
+        "cancel": "Cancel",
+        "success": "Thank you! Your question has been submitted. We'll review it and add it to the FAQ if relevant.",
+        "error": "Please complete at least the question before submitting."
+      }
+    },
+    "support": {
+      "title": "Technology Used:",
+      "starknet": {
+        "features": {
+          "cairo": "Cairo smart contracts",
+          "l2": "Scalable L2 Network",
+          "costs": "Low costs",
+          "security": "Ethereum security"
+        }
+      },
+      "cavos": {
+        "features": {
+          "wallets": "Invisible wallets",
+          "integration": "Aegis SDK integration",
+          "auth": "Perfect authentication"
+        }
+      }
+    },
+    "ctaSection": {
+      "title": "Join our community",
+      "waitlist": {
+        "title": "Waitlist",
+        "description": "Be one of the first to access MidatoPay. Join our waitlist and get priority access when we launch.",
+        "button": "Join now"
+      },
+      "news": {
+        "title": "News",
+        "description": "Stay up to date with our latest achievements, events and updates. Discover how we're revolutionizing payments.",
+        "button": "View news"
+      }
+    },
+    "stats": {
+      "waitlist": "merchants waiting",
+      "billing": "USD in billing waiting",
+      "transactions": "successful transactions",
+      "merchants": "active merchants"
+    },
+    "socialMedia": {
+      "title": "Follow us on our social media"
     }
   },
   "typewriter": {
@@ -242,6 +337,12 @@
         "socialMedia": {
           "title": "Posts on our social media"
         }
+      },
+      "startupWorldCup": {
+        "title": "MidatoPay Selected to Compete in Startup World Cup in Buenos Aires",
+        "date": "November 12 - 2025",
+        "excerpt": "Big news! MidatoPay has been selected to compete in the Startup World Cup qualifiers at AlephHub in Buenos Aires by Crecimiento Argentina.",
+        "content": "Big news! 🎉\n\nMidatoPay has been selected to compete in the Startup World Cup qualifiers at AlephHub in Buenos Aires by **Crecimiento Argentina**.\n\nAnother step toward our dream of bringing financial inclusion and seamless crypto-fiat payments to all of LATAM 🌎\n\nGrateful to our team."
       },
       "startupHouse": {
         "title": "MidatoPay to Participate in Starknet Startup House in Buenos Aires",

@@ -9,19 +9,24 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: 'MidatoPay - Pagos con Criptomonedas',
+  title: 'MidatoPay - El Presente y el Futuro de tus pagos',
   description: 'Sistema de pagos que permite a comercios recibir pagos en criptomonedas y convertirlos automáticamente a pesos argentinos.',
   keywords: ['pagos', 'criptomonedas', 'USDT', 'Bitcoin', 'Ethereum', 'Argentina', 'ARS'],
   authors: [{ name: 'MidatoPay Team' }],
+  icons: {
+    icon: '/midatopay.svg',
+    shortcut: '/midatopay.svg',
+    apple: '/midatopay.svg',
+  },
   openGraph: {
-    title: 'MidatoPay - Pagos con Criptomonedas',
+    title: 'MidatoPay - El Presente y el Futuro de tus pagos',
     description: 'Recibe pagos en criptomonedas y conviértelos automáticamente a pesos argentinos',
     type: 'website',
     locale: 'es_AR',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MidatoPay - Pagos con Criptomonedas',
+    title: 'MidatoPay - El Presente y el Futuro de tus pagos',
     description: 'Recibe pagos en criptomonedas y conviértelos automáticamente a pesos argentinos',
   },
   robots: {
@@ -48,25 +53,32 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <Toaster
-              position="top-right"
+              position="top-center"
               toastOptions={{
                 duration: 4000,
                 style: {
-                  background: '#363636',
-                  color: '#fff',
+                  background: '#FFFFFF',
+                  color: '#2C2C2C',
+                  border: '2px solid #FF6A00',
+                  borderRadius: '12px',
+                  padding: '16px 20px',
+                  fontFamily: 'Kufam, sans-serif',
+                  fontSize: '16px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  maxWidth: '500px'
                 },
                 success: {
-                  duration: 3000,
+                  duration: 5000,
                   iconTheme: {
-                    primary: '#10b981',
-                    secondary: '#fff',
+                    primary: '#FF6A00',
+                    secondary: '#FFFFFF',
                   },
                 },
                 error: {
                   duration: 5000,
                   iconTheme: {
-                    primary: '#ef4444',
-                    secondary: '#fff',
+                    primary: '#FF6A00',
+                    secondary: '#FFFFFF',
                   },
                 },
               }}

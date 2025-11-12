@@ -10,17 +10,53 @@ import {
   ArrowRight,
   Zap,
   Shield,
-  TrendingUp
+  TrendingUp,
+  ScanLine,
+  DollarSign,
+  RefreshCw,
+  ChevronDown,
+  HelpCircle,
+  Plus,
+  X,
+  FileCode,
+  Layers,
+  Coins,
+  Lock,
+  Info,
+  Mail,
+  Newspaper,
+  Users,
+  Wallet,
+  Linkedin,
+  Instagram,
+  MessageCircle,
+  Send
 } from 'lucide-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faXTwitter, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons'
+import { findIconDefinition, icon } from '@fortawesome/fontawesome-svg-core'
 import Image from 'next/image'
 import Link from 'next/link'
 import CustomHeader from '@/components/CustomHeader'
 import ScrollVelocity from '@/components/ScrollVelocity'
 import { useLanguage } from '@/contexts/LanguageContext'
+import toast, { Toaster } from 'react-hot-toast'
 
 export default function HomePage() {
   const { t, language } = useLanguage()
   const [typewriterText, setTypewriterText] = useState('')
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string>('general')
+  const [showStarknetInfo, setShowStarknetInfo] = useState(false)
+  const [showCavosInfo, setShowCavosInfo] = useState(false)
+  const [showAskQuestionModal, setShowAskQuestionModal] = useState(false)
+  const [questionText, setQuestionText] = useState('')
+  const [questionContext, setQuestionContext] = useState('')
+  const [stats, setStats] = useState({
+    waitlist_count: 0,
+    total_billing_usd: 0
+  })
+  const [statsLoading, setStatsLoading] = useState(true)
   
   const words = t.typewriter.words
   const typewriterRef = useRef({
@@ -75,6 +111,45 @@ export default function HomePage() {
     
     return () => clearInterval(typeInterval)
   }, [words])
+
+  // Fetch statistics
+  const fetchStats = async () => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+      const url = `${apiUrl}/api/stats`
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error)
+    } finally {
+      setStatsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchStats()
+    
+    // Escuchar eventos de actualización de waitlist
+    const handleWaitlistUpdate = () => {
+      fetchStats()
+    }
+    
+    window.addEventListener('waitlist-updated', handleWaitlistUpdate)
+    
+    return () => {
+      window.removeEventListener('waitlist-updated', handleWaitlistUpdate)
+    }
+  }, [])
 
   // Datos del proceso estático
   const processSteps = [
@@ -300,12 +375,28 @@ export default function HomePage() {
                 </div>
                 
                 <div className="flex flex-col items-start mb-6">
-                  <Button size="lg" className="text-lg sm:text-xl md:text-2xl px-8 sm:px-10 py-5 sm:py-6 text-white mb-2 rounded-xl w-full sm:w-auto" style={{ backgroundColor: '#FF6A00', fontFamily: 'Kufam, sans-serif' }} asChild>
-                    <Link href="/auth/register" className="flex items-center justify-center">
-                      {t.homepage.cta.button}
-                      <ArrowRight className="ml-2 w-5 h-5 sm:w-6 sm:h-6" />
-                    </Link>
-                  </Button>
+                  <Link 
+                    href="/auth/register" 
+                    className="cta-button-gradient text-base sm:text-lg md:text-xl px-6 sm:px-8 py-3 sm:py-4 text-white mb-2 w-full sm:w-auto flex items-center justify-center gap-2.5 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    style={{ fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.cta.button}
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="24" 
+                      height="24" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      className="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0"
+                    >
+                      <path d="M7 7h10v10"/>
+                      <path d="M7 17 17 7"/>
+                    </svg>
+                  </Link>
                 </div>
               </motion.div>
                 </div>
@@ -441,307 +532,1117 @@ export default function HomePage() {
         </div>
       </section>
 
-        {/* Sección de Proceso con Glassmorphism */}
-        <section className="py-20 px-4" style={{ backgroundColor: '#fff5f0' }}>
-        <div className="container mx-auto max-w-7xl">
-          {/* Título */}
-          <div className="text-center mb-16">
-            <h2 
-              className="text-4xl md:text-5xl font-bold mb-6"
-              style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-            >
-              {t.homepage.howItWorks.title}
-            </h2>
-            <p 
-              className="text-xl max-w-3xl mx-auto"
-              style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}
-            >
-              {t.homepage.howItWorks.subtitle}
-            </p>
-          </div>
+        {/* Sección de Proceso - Diseño inspirado en imagen */}
+        <section className="py-12 md:py-20 px-4 sm:px-6" style={{ backgroundColor: '#fff5f0' }}>
+        <div className="container mx-auto">
+          {/* Layout principal: Izquierda (título + tarjeta 1) y Derecha (tarjetas 2, 3, 4) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
+            
+            {/* LADO IZQUIERDO - Más ancho (2 columnas en desktop) */}
+            <div className="lg:col-span-2 space-y-6 md:space-y-8">
+              {/* Título y Subtítulo - Dividido en líneas específicas */}
+              <div className="space-y-2">
+                <h2 
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.howItWorks.titleLine1}
+                </h2>
+                <h2 
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.howItWorks.titleLine2}
+                </h2>
+                <p 
+                  className="text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mt-4"
+                  style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.howItWorks.subtitleLine1}
+                </p>
+                <p 
+                  className="text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl"
+                  style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.howItWorks.subtitleLine2}
+                </p>
+              </div>
 
-          {/* Proceso paso a paso con diseño glassmorphism EXACTO */}
-          <div className="max-w-7xl mx-auto">
-            {/* Fila superior: Tarjetas 1 y 2 + Texto descriptivo */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
-              {/* Tarjeta 1 */}
-              <div
-                className="relative rounded-2xl p-6 md:p-8 overflow-hidden"
+              {/* Tarjeta 1 - Más pequeña que las de la derecha */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="relative rounded-2xl p-4 md:p-5 overflow-hidden max-w-lg"
                 style={{ 
                   fontFamily: 'Kufam, sans-serif',
-                  background: 'transparent',
-                  border: '1.8px solid #FF6A00'
+                  background: '#FF6A00'
                 }}
               >
-                
-                {/* Número grande ARRIBA */}
-                <div 
-                  className="absolute top-2 left-4 text-6xl md:text-8xl font-bold opacity-30"
-                  style={{ color: '#FF6A00' }}
-                >
-                  1
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+                  {/* Icono - QR Code */}
+                  <div className="flex-shrink-0">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center bg-white bg-opacity-20"
+                      style={{ 
+                        color: '#fff'
+                      }}
+                    >
+                      <QrCode className="w-6 h-6" />
+                    </div>
+                  </div>
+                  
+                  {/* Contenido - Más compacto */}
+                  <div className="flex-1">
+                    <h3 
+                      className="text-base md:text-lg font-bold mb-2"
+                      style={{ color: '#FFFFFF' }}
+                    >
+                      {processSteps[0].title}
+                    </h3>
+                    <p 
+                      className="text-sm md:text-base leading-relaxed"
+                      style={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                    >
+                      {processSteps[0].description}
+                    </p>
+                  </div>
                 </div>
-
-                {/* Contenido MUCHO MÁS ABAJO - ALINEADO A LA IZQUIERDA */}
-                <div className="relative z-10 mt-12 md:mt-16 ml-4">
-                  <h3 
-                    className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-left"
-                    style={{ color: '#2C2C2C' }}
-                  >
-                    {processSteps[0].title}
-                  </h3>
-                  <p 
-                    className="text-sm md:text-base leading-relaxed text-left"
-                    style={{ color: '#8B8B8B' }}
-                  >
-                    {processSteps[0].description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Tarjeta 2 */}
-              <div
-                className="relative rounded-2xl p-6 md:p-8 overflow-hidden"
-                style={{ 
-                  fontFamily: 'Kufam, sans-serif',
-                  background: 'transparent',
-                  border: '1.8px solid #FF6A00'
-                }}
-              >
-                
-                {/* Número grande ARRIBA */}
-                <div 
-                  className="absolute top-2 left-4 text-6xl md:text-8xl font-bold opacity-30"
-                  style={{ color: '#FF6A00' }}
-                >
-                  2
-                </div>
-
-                {/* Contenido MUCHO MÁS ABAJO - ALINEADO A LA IZQUIERDA */}
-                <div className="relative z-10 mt-12 md:mt-16 ml-4">
-                  <h3 
-                    className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-left"
-                    style={{ color: '#2C2C2C' }}
-                  >
-                    {processSteps[1].title}
-                  </h3>
-                  <p 
-                    className="text-sm md:text-base leading-relaxed text-left"
-                    style={{ color: '#8B8B8B' }}
-                  >
-                    {processSteps[1].description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Texto descriptivo SIN CUADRADO */}
-              <div className="flex items-start justify-start h-full pt-6 md:pt-0">
-                <div className="text-left">
-                  <p 
-                    className="text-lg md:text-2xl font-medium leading-relaxed mb-2"
-                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-                  >
-                    {t.homepage.howItWorks.description.line1}
-                  </p>
-                  <p 
-                    className="text-lg md:text-2xl font-medium leading-relaxed mb-2"
-                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-                  >
-                    {t.homepage.howItWorks.description.line2}
-                  </p>
-                  <p 
-                    className="text-lg md:text-2xl font-bold leading-relaxed mb-2"
-                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-                  >
-                    {t.homepage.howItWorks.description.line3}
-                  </p>
-                  <p 
-                    className="text-lg md:text-2xl font-bold leading-relaxed mb-2"
-                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-                  >
-                    {t.homepage.howItWorks.description.line4}
-                  </p>
-                  <p 
-                    className="text-lg md:text-2xl font-bold leading-relaxed"
-                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-                  >
-                    {t.homepage.howItWorks.description.line5}
-                  </p>
-                </div>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Fila inferior: Paso 3 debajo del Paso 2, Paso 4 debajo del texto */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {/* Espacio vacío para alinear con Tarjeta 1 - Oculto en móvil */}
-              <div className="hidden md:block"></div>
-              
-              {/* Tarjeta 3 - DEBAJO del Paso 2 */}
-              <div
-                className="relative rounded-2xl p-6 md:p-8 overflow-hidden"
+            {/* LADO DERECHO - Más estrecho (1 columna en desktop) */}
+            <div className="lg:col-span-1 space-y-4 md:space-y-6">
+              {/* Tarjeta 2 - Estilo con fondo oscuro */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="relative rounded-2xl py-4 md:py-5 pl-4 md:pl-6 pr-4 md:pr-5 overflow-hidden lg:-ml-16"
                 style={{ 
                   fontFamily: 'Kufam, sans-serif',
-                  background: 'transparent',
-                  border: '1.8px solid #FF6A00'
+                  background: '#1A1A1A'
                 }}
               >
-                
-                {/* Número grande ARRIBA */}
-                <div 
-                  className="absolute top-2 left-4 text-6xl md:text-8xl font-bold opacity-30"
-                  style={{ color: '#FF6A00' }}
-                >
-                  3
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+                  {/* Icono - Scan Line en círculo gris oscuro */}
+                  <div className="flex-shrink-0">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: '#2e2e2e'
+                      }}
+                    >
+                      <ScanLine className="w-6 h-6" style={{ color: '#FF6A00' }} />
+                    </div>
+                  </div>
+                  
+                  {/* Contenido */}
+                  <div className="flex-1">
+                    <h3 
+                      className="text-base md:text-lg font-bold mb-2"
+                      style={{ color: '#ffffff' }}
+                    >
+                      {processSteps[1].title}
+                    </h3>
+                    <p 
+                      className="text-sm md:text-base leading-relaxed"
+                      style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                    >
+                      {processSteps[1].description}
+                    </p>
+                  </div>
                 </div>
+              </motion.div>
 
-                {/* Contenido MUCHO MÁS ABAJO - ALINEADO A LA IZQUIERDA */}
-                <div className="relative z-10 mt-12 md:mt-16 ml-4">
-                  <h3 
-                    className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-left"
-                    style={{ color: '#2C2C2C' }}
-                  >
-                    {processSteps[2].title}
-                </h3>
-                  <p 
-                    className="text-sm md:text-base leading-relaxed text-left"
-                    style={{ color: '#8B8B8B' }}
-                  >
-                    {processSteps[2].description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Tarjeta 4 - DEBAJO del texto descriptivo */}
-              <div
-                className="relative rounded-2xl p-6 md:p-8 overflow-hidden"
+              {/* Tarjeta 3 - Estilo con fondo oscuro */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="relative rounded-2xl py-4 md:py-5 pl-4 md:pl-6 pr-4 md:pr-5 overflow-hidden lg:-ml-16"
                 style={{ 
                   fontFamily: 'Kufam, sans-serif',
-                  background: 'transparent',
-                  border: '1.8px solid #FF6A00'
+                  background: '#1A1A1A'
                 }}
               >
-                
-                {/* Número grande ARRIBA */}
-                <div 
-                  className="absolute top-2 left-4 text-6xl md:text-8xl font-bold opacity-30"
-                  style={{ color: '#FF6A00' }}
-                >
-                  4
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+                  {/* Icono - Dollar Sign en círculo gris oscuro */}
+                  <div className="flex-shrink-0">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: '#2e2e2e'
+                      }}
+                    >
+                      <DollarSign className="w-6 h-6" style={{ color: '#FF6A00' }} />
+                    </div>
+                  </div>
+                  
+                  {/* Contenido */}
+                  <div className="flex-1">
+                    <h3 
+                      className="text-base md:text-lg font-bold mb-2"
+                      style={{ color: '#ffffff' }}
+                    >
+                      {processSteps[2].title}
+                    </h3>
+                    <p 
+                      className="text-sm md:text-base leading-relaxed"
+                      style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                    >
+                      {processSteps[2].description}
+                    </p>
+                  </div>
                 </div>
+              </motion.div>
 
-                {/* Contenido MUCHO MÁS ABAJO - ALINEADO A LA IZQUIERDA */}
-                <div className="relative z-10 mt-12 md:mt-16 ml-4">
-                  <h3 
-                    className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-left"
-                    style={{ color: '#2C2C2C' }}
-                  >
-                    {processSteps[3].title}
-                  </h3>
-                  <p 
-                    className="text-sm md:text-base leading-relaxed text-left"
-                    style={{ color: '#8B8B8B' }}
-                  >
-                    {processSteps[3].description}
-                  </p>
+              {/* Tarjeta 4 - Estilo con fondo oscuro */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="relative rounded-2xl py-4 md:py-5 pl-4 md:pl-6 pr-4 md:pr-5 overflow-hidden lg:-ml-16"
+                style={{ 
+                  fontFamily: 'Kufam, sans-serif',
+                  background: '#1A1A1A'
+                }}
+              >
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+                  {/* Icono - Refresh Cw en círculo gris oscuro */}
+                  <div className="flex-shrink-0">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: '#2e2e2e'
+                      }}
+                    >
+                      <RefreshCw className="w-6 h-6" style={{ color: '#FF6A00' }} />
+                    </div>
+                  </div>
+                  
+                  {/* Contenido */}
+                  <div className="flex-1">
+                    <h3 
+                      className="text-base md:text-lg font-bold mb-2"
+                      style={{ color: '#ffffff' }}
+                    >
+                      {processSteps[3].title}
+                    </h3>
+                    <p 
+                      className="text-sm md:text-base leading-relaxed"
+                      style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                    >
+                      {processSteps[3].description}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Sección Problemas y Soluciones */}
-      <section className="py-20 px-4" style={{ backgroundColor: '#FFF4EC' }}>
-        <div className="container mx-auto max-w-7xl">
-          {/* Título Principal */}
+      {/* Sección FAQ */}
+      <section className="py-12 md:py-20 px-4 sm:px-6" style={{ backgroundColor: '#fff5f0' }}>
+        <div className="container mx-auto">
+          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mb-12 md:mb-16"
           >
+            <div className="mb-4">
+              <span 
+                className="text-sm md:text-base font-semibold uppercase tracking-wider"
+                style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif' }}
+              >
+                {t.homepage.faq.title}
+              </span>
+            </div>
             <h2 
-              className="text-4xl md:text-5xl font-bold mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight"
               style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
             >
-              {t.homepage.problems.title}
+              {t.homepage.faq.mainTitle}
             </h2>
             <p 
-              className="text-xl max-w-3xl mx-auto"
+              className="text-lg sm:text-xl md:text-2xl leading-relaxed"
               style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}
             >
-              {t.homepage.problems.subtitle}
+              {t.homepage.faq.subtitle}
             </p>
           </motion.div>
 
-          {/* Problemas */}
-          <div className="grid md:grid-cols-2 gap-12 mb-20">
-            {/* Problema 1 */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-3">
-                <div 
-                  className="text-2xl font-bold"
-                  style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif' }}
-                >
-                  01
-                </div>
-                <div 
-                  className="h-0.5 w-16"
-                  style={{ backgroundColor: '#FF6A00' }}
-                />
+          {/* Layout: Categorías (izquierda) y Preguntas (derecha) */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-16 xl:gap-24">
+            {/* Columna Izquierda - Categorías */}
+            <div className="lg:col-span-1">
+              <div className="space-y-2">
+                {Object.entries(t.homepage.faq.categories).map(([key, name]) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setSelectedCategory(key)
+                      setOpenFAQ(null)
+                    }}
+                    className="w-full px-4 py-5 rounded-full transition-all flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: selectedCategory === key ? '#FF6A00' : '#E5E5E5',
+                      color: selectedCategory === key ? '#FFFFFF' : '#5d5d5d',
+                      fontFamily: 'Kufam, sans-serif',
+                      fontWeight: 600
+                    }}
+                  >
+                    {name as string}
+                  </button>
+                ))}
               </div>
-              <h3 
-                className="text-2xl font-bold"
-                style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
-              >
-                {t.homepage.problems.problem1.title}
-              </h3>
-              <p 
-                className="text-lg leading-relaxed"
-                style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}
-              >
-                {t.homepage.problems.problem1.description}
-              </p>
-            </motion.div>
+            </div>
 
-            {/* Problema 2 */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center space-x-3">
-                <div 
-                  className="text-2xl font-bold"
-                  style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif' }}
-                >
-                  02
-                </div>
-                <div 
-                  className="h-0.5 w-16"
-                  style={{ backgroundColor: '#FF6A00' }}
-                />
+            {/* Columna Derecha - Preguntas y Respuestas */}
+            <div className="lg:col-span-3 pl-0 lg:pl-8">
+              <div className="space-y-0">
+                {(() => {
+                  const currentItems = t.homepage.faq.items[selectedCategory as keyof typeof t.homepage.faq.items] || []
+                  return currentItems.map((item: { question: string; answer: string }, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className={
+                      index === 0 
+                        ? "pb-6" 
+                        : index < currentItems.length - 1 
+                        ? "pb-6 mb-6" 
+                        : "pb-0"
+                    }
+                  >
+                    <button
+                      onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                      className="w-full flex items-center justify-between text-left group mb-4 ml-0 lg:ml-8"
+                      style={{ fontFamily: 'Kufam, sans-serif' }}
+                    >
+                      <h3 
+                        className="text-lg sm:text-xl md:text-2xl font-bold pr-4 flex-1"
+                        style={{ color: '#2C2C2C' }}
+                      >
+                        {item.question}
+                      </h3>
+                      <div className="flex-shrink-0">
+                        {openFAQ === index ? (
+                          <X 
+                            className="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:rotate-90" 
+                            style={{ color: '#2C2C2C' }}
+                          />
+                        ) : (
+                          <Plus 
+                            className="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:rotate-90" 
+                            style={{ color: '#2C2C2C' }}
+                          />
+                        )}
+                      </div>
+                    </button>
+                    {index < currentItems.length - 1 && (
+                      <div className="border-b ml-0 lg:ml-8" style={{ borderColor: '#FFB366', borderWidth: '1px' }}></div>
+                    )}
+                    <motion.div
+                      initial={false}
+                      animate={{ 
+                        height: openFAQ === index ? 'auto' : 0,
+                        opacity: openFAQ === index ? 1 : 0
+                      }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden mt-4 ml-0 lg:ml-8"
+                    >
+                      <div 
+                        className="pt-4"
+                        style={{ fontFamily: 'Kufam, sans-serif' }}
+                      >
+                        <p 
+                          className="text-base sm:text-lg leading-relaxed"
+                          style={{ color: '#5d5d5d' }}
+                        >
+                          {item.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                  ))
+                })()}
               </div>
+
+              {/* Botón para hacer una pregunta */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="mt-8 flex justify-end"
+              >
+                <button
+                  onClick={() => setShowAskQuestionModal(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full transition-all hover:scale-105"
+                  style={{
+                    backgroundColor: '#FF6A00',
+                    color: '#FFFFFF',
+                    fontFamily: 'Kufam, sans-serif',
+                    fontWeight: 600
+                  }}
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  <span>{t.homepage.faq.askQuestion.button}</span>
+                </button>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Modal para hacer una pregunta */}
+      {showAskQuestionModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={() => {
+            setShowAskQuestionModal(false)
+            setQuestionText('')
+            setQuestionContext('')
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-2xl"
+            style={{ backgroundColor: '#FFFFFF' }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
               <h3 
-                className="text-2xl font-bold"
+                className="text-2xl md:text-3xl font-bold"
                 style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
               >
-                {t.homepage.problems.problem2.title}
+                {t.homepage.faq.askQuestion.title}
               </h3>
-              <p 
-                className="text-lg leading-relaxed"
-                style={{ color: '#8B8B8B', fontFamily: 'Kufam, sans-serif' }}
+              <button
+                onClick={() => {
+                  setShowAskQuestionModal(false)
+                  setQuestionText('')
+                  setQuestionContext('')
+                }}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                style={{ color: '#8B8B8B' }}
               >
-                {t.homepage.problems.problem2.description}
-              </p>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className="space-y-6">
+              {/* Campo de pregunta */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.faq.askQuestion.questionLabel}
+                </label>
+                <textarea
+                  value={questionText}
+                  onChange={(e) => setQuestionText(e.target.value)}
+                  placeholder={t.homepage.faq.askQuestion.questionPlaceholder}
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#FF6A00] focus:border-[#FF6A00] resize-none"
+                  style={{ 
+                    fontFamily: 'Kufam, sans-serif',
+                    color: '#2C2C2C'
+                  }}
+                />
+              </div>
+
+              {/* Campo de contexto */}
+              <div>
+                <label 
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.faq.askQuestion.contextLabel}
+                </label>
+                <textarea
+                  value={questionContext}
+                  onChange={(e) => setQuestionContext(e.target.value)}
+                  placeholder={t.homepage.faq.askQuestion.contextPlaceholder}
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#FF6A00] focus:border-[#FF6A00] resize-none"
+                  style={{ 
+                    fontFamily: 'Kufam, sans-serif',
+                    color: '#2C2C2C'
+                  }}
+                />
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-4 justify-end pt-4">
+                <button
+                  onClick={() => {
+                    setShowAskQuestionModal(false)
+                    setQuestionText('')
+                    setQuestionContext('')
+                  }}
+                  className="px-6 py-3 rounded-lg border border-gray-300 transition-colors hover:bg-gray-50"
+                  style={{ 
+                    color: '#5d5d5d', 
+                    fontFamily: 'Kufam, sans-serif',
+                    fontWeight: 600
+                  }}
+                >
+                  {t.homepage.faq.askQuestion.cancel}
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!questionText.trim()) {
+                      toast.error(t.homepage.faq.askQuestion.error, {
+                        style: {
+                          background: '#FFFFFF',
+                          color: '#2C2C2C',
+                          border: '2px solid #FF6A00',
+                          borderRadius: '12px',
+                          padding: '16px 20px',
+                          fontFamily: 'Kufam, sans-serif',
+                          fontSize: '16px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                        },
+                        iconTheme: {
+                          primary: '#FF6A00',
+                          secondary: '#FFFFFF',
+                        },
+                      })
+                      return
+                    }
+
+                    try {
+                      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/faq/question`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          question: questionText.trim(),
+                          context: questionContext.trim() || undefined
+                        })
+                      })
+
+                      const data = await response.json()
+
+                      if (data.success) {
+                        toast.success(t.homepage.faq.askQuestion.success, {
+                          duration: 5000,
+                          style: {
+                            background: '#FFFFFF',
+                            color: '#2C2C2C',
+                            border: '2px solid #FF6A00',
+                            borderRadius: '12px',
+                            padding: '16px 20px',
+                            fontFamily: 'Kufam, sans-serif',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                            maxWidth: '500px'
+                          },
+                          iconTheme: {
+                            primary: '#FF6A00',
+                            secondary: '#FFFFFF',
+                          },
+                        })
+                        setShowAskQuestionModal(false)
+                        setQuestionText('')
+                        setQuestionContext('')
+                      } else {
+                        toast.error(data.error || 'Error al enviar la pregunta. Por favor intenta de nuevo.', {
+                          style: {
+                            background: '#FFFFFF',
+                            color: '#2C2C2C',
+                            border: '2px solid #FF6A00',
+                            borderRadius: '12px',
+                            padding: '16px 20px',
+                            fontFamily: 'Kufam, sans-serif',
+                            fontSize: '16px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                          },
+                          iconTheme: {
+                            primary: '#FF6A00',
+                            secondary: '#FFFFFF',
+                          },
+                        })
+                      }
+                    } catch (error) {
+                      console.error('Error enviando pregunta:', error)
+                      toast.error('Error al enviar la pregunta. Por favor intenta de nuevo más tarde.', {
+                        style: {
+                          background: '#FFFFFF',
+                          color: '#2C2C2C',
+                          border: '2px solid #FF6A00',
+                          borderRadius: '12px',
+                          padding: '16px 20px',
+                          fontFamily: 'Kufam, sans-serif',
+                          fontSize: '16px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                        },
+                        iconTheme: {
+                          primary: '#FF6A00',
+                          secondary: '#FFFFFF',
+                        },
+                      })
+                    }
+                  }}
+                  className="px-6 py-3 rounded-lg transition-all hover:scale-105 flex items-center gap-2"
+                  style={{ 
+                    backgroundColor: '#FF6A00',
+                    color: '#FFFFFF',
+                    fontFamily: 'Kufam, sans-serif',
+                    fontWeight: 600
+                  }}
+                >
+                  <Send className="w-4 h-4" />
+                  <span>{t.homepage.faq.askQuestion.submit}</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Sección de Apoyo - Starknet y Cavos */}
+      <section className="py-12 md:py-20 px-4 sm:px-6" style={{ backgroundColor: '#fff5f0' }}>
+        <div className="container mx-auto max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 lg:gap-24"
+          >
+            {/* Texto a la izquierda */}
+            <div className="flex-shrink-0">
+              <h2 
+                className="text-2xl md:text-3xl lg:text-4xl font-bold whitespace-nowrap"
+                style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+              >
+                {t.homepage.support.title}
+              </h2>
+            </div>
+
+            {/* Logos y Iconos de Información a la derecha */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+              {/* Starknet */}
+              <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                <Image
+                  src="/starknet-logo.svg"
+                  alt="Starknet Logo"
+                  width={280}
+                  height={110}
+                  className="object-contain w-[200px] h-auto md:w-[280px]"
+                />
+                <button
+                  onClick={() => setShowStarknetInfo(true)}
+                  className="flex-shrink-0 p-2 rounded-full hover:bg-gray-200 transition-colors"
+                  aria-label="Información sobre Starknet"
+                >
+                  <Info className="w-5 h-5 md:w-6 md:h-6" style={{ color: '#FF6A00' }} />
+                </button>
+              </div>
+
+              {/* Cavos */}
+              <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                <Image
+                  src="/cavos-logo.svg"
+                  alt="Cavos Logo"
+                  width={180}
+                  height={55}
+                  className="object-contain w-[140px] h-auto md:w-[180px]"
+                />
+                <button
+                  onClick={() => setShowCavosInfo(true)}
+                  className="flex-shrink-0 p-2 rounded-full hover:bg-gray-200 transition-colors"
+                  aria-label="Información sobre Cavos"
+                >
+                  <Info className="w-5 h-5 md:w-6 md:h-6" style={{ color: '#FF6A00' }} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Modal de Información - Starknet */}
+        {showStarknetInfo && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+            onClick={() => setShowStarknetInfo(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header del Modal */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 
+                  className="text-xl md:text-2xl font-bold"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  Starknet
+                </h3>
+                <button
+                  onClick={() => setShowStarknetInfo(false)}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Cerrar"
+                >
+                  <X className="w-5 h-5" style={{ color: '#2C2C2C' }} />
+                </button>
+              </div>
+
+              {/* Lista de Características */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <FileCode className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.starknet.features.cairo}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Layers className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.starknet.features.l2}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Coins className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.starknet.features.costs}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Lock className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.starknet.features.security}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           </div>
+        )}
+
+        {/* Modal de Información - Cavos */}
+        {showCavosInfo && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+            onClick={() => setShowCavosInfo(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header del Modal */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 
+                  className="text-xl md:text-2xl font-bold"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  Cavos
+                </h3>
+                <button
+                  onClick={() => setShowCavosInfo(false)}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Cerrar"
+                >
+                  <X className="w-5 h-5" style={{ color: '#2C2C2C' }} />
+                </button>
+              </div>
+
+              {/* Lista de Características */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.cavos.features.wallets}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Layers className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.cavos.features.integration}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Lock className="w-5 h-5 flex-shrink-0" style={{ color: '#FF6A00' }} />
+                  <p 
+                    className="text-base md:text-lg"
+                    style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.support.cavos.features.auth}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </section>
+
+      {/* Sección de Estadísticas */}
+      <section className="py-12 md:py-20 px-4 sm:px-6" style={{ backgroundColor: '#fff5f0' }}>
+        <div className="container mx-auto max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {/* Estadística 1: Comercios en lista de espera */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="stats-card-border"
+              style={{ 
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+              }}
+            >
+              <div className="stats-card-content text-center p-8 md:p-10 relative overflow-hidden group">
+                <div className="relative z-10">
+                {/* Icono */}
+                <div className="flex justify-center mb-4">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: '#fff5f0' }}
+                  >
+                    <Users className="w-8 h-8" style={{ color: '#FF6A00' }} />
+                  </div>
+                </div>
+                <div 
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 transition-transform group-hover:scale-105"
+                  style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {statsLoading ? (
+                    <span className="inline-block animate-pulse">...</span>
+                  ) : (
+                    `+${stats.waitlist_count}`
+                  )}
+                </div>
+                <p 
+                  className="text-base md:text-lg font-medium"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.stats.waitlist}
+                </p>
+                </div>
+                {/* Decorative gradient overlay */}
+                <div 
+                  className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 blur-3xl"
+                  style={{ backgroundColor: '#FF6A00' }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Estadística 2: Facturación total en espera */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="stats-card-border"
+              style={{ 
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+              }}
+            >
+              <div className="stats-card-content text-center p-8 md:p-10 relative overflow-hidden group">
+                <div className="relative z-10">
+                {/* Icono */}
+                <div className="flex justify-center mb-4">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: '#fff5f0' }}
+                  >
+                    <Wallet className="w-8 h-8" style={{ color: '#FF6A00' }} />
+                  </div>
+                </div>
+                <div 
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 transition-transform group-hover:scale-105"
+                  style={{ color: '#FF6A00', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {statsLoading ? (
+                    <span className="inline-block animate-pulse">...</span>
+                  ) : (
+                    `$${Math.round(stats.total_billing_usd / 1000)}K+`
+                  )}
+                </div>
+                <p 
+                  className="text-base md:text-lg font-medium"
+                  style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                >
+                  {t.homepage.stats.billing}
+                </p>
+                </div>
+                {/* Decorative gradient overlay */}
+                <div 
+                  className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 blur-3xl"
+                  style={{ backgroundColor: '#FF6A00' }}
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección CTA - Lista de Espera y Noticias */}
+      <section className="py-16 md:py-24 px-4 sm:px-6" style={{ backgroundColor: '#fff5f0' }}>
+        <div className="container mx-auto max-w-5xl">
+          {/* Título */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12 md:mb-16"
+          >
+            <h2 
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+              style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+            >
+              {t.homepage.ctaSection.title}
+            </h2>
+          </motion.div>
+
+          {/* Tarjetas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {/* Tarjeta Lista de Espera */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative rounded-2xl p-5 md:p-8 lg:p-10 overflow-hidden group cursor-pointer"
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '2px solid transparent',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#FF6A00'
+                e.currentTarget.style.transform = 'translateY(-4px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'transparent'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              <Link href="/lista-de-espera" className="block">
+                <div className="flex items-start gap-4 mb-4 md:mb-6">
+                  <div 
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: '#FF6A00' }}
+                  >
+                    <Mail className="w-6 h-6 md:w-7 md:h-7" style={{ color: '#FFFFFF' }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 
+                      className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-3 leading-tight"
+                      style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                    >
+                      {t.homepage.ctaSection.waitlist.title}
+                    </h3>
+                    <p 
+                      className="text-sm md:text-base lg:text-lg leading-relaxed"
+                      style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
+                    >
+                      {t.homepage.ctaSection.waitlist.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-4 md:mt-0" style={{ color: '#FF6A00' }}>
+                  <span 
+                    className="text-sm md:text-base lg:text-lg font-semibold"
+                    style={{ fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.ctaSection.waitlist.button}
+                  </span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Tarjeta Noticias */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative rounded-2xl p-5 md:p-8 lg:p-10 overflow-hidden group cursor-pointer"
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '2px solid transparent',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#FF6A00'
+                e.currentTarget.style.transform = 'translateY(-4px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'transparent'
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              <Link href="/noticias" className="block">
+                <div className="flex items-start gap-4 mb-4 md:mb-6">
+                  <div 
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: '#FF6A00' }}
+                  >
+                    <Newspaper className="w-6 h-6 md:w-7 md:h-7" style={{ color: '#FFFFFF' }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 
+                      className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-3 leading-tight"
+                      style={{ color: '#2C2C2C', fontFamily: 'Kufam, sans-serif' }}
+                    >
+                      {t.homepage.ctaSection.news.title}
+                    </h3>
+                    <p 
+                      className="text-sm md:text-base lg:text-lg leading-relaxed"
+                      style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}
+                    >
+                      {t.homepage.ctaSection.news.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-4 md:mt-0" style={{ color: '#FF6A00' }}>
+                  <span 
+                    className="text-sm md:text-base lg:text-lg font-semibold"
+                    style={{ fontFamily: 'Kufam, sans-serif' }}
+                  >
+                    {t.homepage.ctaSection.news.button}
+                  </span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección de Redes Sociales */}
+      <section className="py-12 md:py-16 px-4 sm:px-6" style={{ backgroundColor: '#fff5f0' }}>
+        <div className="container mx-auto max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <div className="flex justify-center items-center gap-6 md:gap-8">
+              {/* X */}
+              <motion.a
+                href="https://x.com/midatopay"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="group"
+              >
+                <div 
+                  className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300"
+                  style={{ 
+                    backgroundColor: '#FFFFFF',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <FontAwesomeIcon 
+                    icon={faXTwitter}
+                    className="w-7 h-7 md:w-8 md:h-8 transition-colors duration-300 group-hover:text-[#FF6A00]" 
+                    style={{ color: '#5d5d5d' }}
+                  />
+                </div>
+              </motion.a>
+
+              {/* LinkedIn */}
+              <motion.a
+                href="https://www.linkedin.com/company/midatopay/"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="group"
+              >
+                <div 
+                  className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300"
+                  style={{ 
+                    backgroundColor: '#FFFFFF',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <FontAwesomeIcon 
+                    icon={faLinkedin}
+                    className="w-7 h-7 md:w-8 md:h-8 transition-colors duration-300 group-hover:text-[#FF6A00]" 
+                    style={{ color: '#5d5d5d' }}
+                  />
+                </div>
+              </motion.a>
+
+              {/* Instagram */}
+              <motion.a
+                href="https://www.instagram.com/midatopay/"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="group"
+              >
+                <div 
+                  className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300"
+                  style={{ 
+                    backgroundColor: '#FFFFFF',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <FontAwesomeIcon 
+                    icon={faInstagram}
+                    className="w-7 h-7 md:w-8 md:h-8 transition-colors duration-300 group-hover:text-[#FF6A00]" 
+                    style={{ color: '#5d5d5d' }}
+                  />
+                </div>
+              </motion.a>
+            </div>
+          </motion.div>
         </div>
       </section>
 

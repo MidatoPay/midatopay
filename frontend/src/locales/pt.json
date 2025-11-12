@@ -56,7 +56,11 @@
     },
     "howItWorks": {
       "title": "Como funciona o MidatoPay",
+      "titleLine1": "Como funciona",
+      "titleLine2": "MidatoPay",
       "subtitle": "Um processo simples e seguro para proteger suas vendas da inflação",
+      "subtitleLine1": "Um processo simples e seguro para proteger",
+      "subtitleLine2": "suas vendas da inflação",
       "description": {
         "line1": "Um ciclo dinâmico",
         "line2": "iterativo focado em",
@@ -84,7 +88,7 @@
     "cta": {
       "title": "Pronto para proteger suas vendas?",
       "description": "Junte-se aos comerciantes que já estão protegendo sua renda da inflação.",
-      "button": "Começar Agora"
+      "button": "Começar"
     },
     "footer": {
       "description": "Proteja suas vendas da inflação com pagamentos em criptomoedas. Conversão automática e segurança blockchain para seu negócio.",
@@ -98,7 +102,7 @@
       "contact": "Contato",
       "documentation": "Documentação",
       "systemStatus": "Status do Sistema",
-      "copyright": "© 2024 MidatoPay. Todos os direitos reservados.",
+      "copyright": "© 2025 MidatoPay. Todos os direitos reservados.",
       "privacy": "Política de Privacidade",
       "terms": "Termos de Serviço",
       "cookies": "Cookies"
@@ -114,6 +118,97 @@
         "title": "Complexidade técnica desnecessária",
         "description": "Os clientes chegam à loja e não conseguem entender como pagar com criptomoedas. Tudo parece complicado, eles precisam de carteiras, conhecimentos técnicos e acabam abandonando a compra."
       }
+    },
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "mainTitle": "Tem uma pergunta?",
+      "subtitle": "Tudo o que você precisa saber sobre MidatoPay",
+      "categories": {
+        "general": "Geral",
+        "pagos": "Pagamentos"
+      },
+      "items": {
+        "general": [
+          {
+            "question": "Como funciona o MidatoPay?",
+            "answer": "MidatoPay permite que comerciantes gerem códigos QR que os clientes podem escanear. Os clientes pagam em pesos argentinos usando seu método preferido, e o MidatoPay converte automaticamente esses pesos para criptomoedas, protegendo o valor das vendas contra a inflação."
+          },
+          {
+            "question": "Quais criptomoedas o MidatoPay aceita?",
+            "answer": "MidatoPay aceita múltiplas criptomoedas incluindo USDT, BTC e ETH. O comerciante pode escolher em qual criptomoeda deseja receber os pagamentos ao gerar o código QR."
+          },
+          {
+            "question": "Preciso de conhecimento técnico para usar o MidatoPay?",
+            "answer": "Não, o MidatoPay foi projetado para ser simples e fácil de usar. Você só precisa gerar um código QR e seus clientes podem pagar normalmente. A conversão para criptomoedas é automática e transparente."
+          }
+        ],
+        "pagos": [
+          {
+            "question": "Quanto tempo leva a conversão?",
+            "answer": "A conversão de pesos argentinos para criptomoedas é instantânea. Uma vez que o cliente completa o pagamento, o comerciante recebe a confirmação em segundos."
+          },
+          {
+            "question": "É seguro usar o MidatoPay?",
+            "answer": "Sim, o MidatoPay utiliza tecnologia blockchain para garantir a segurança das transações. Todas as conversões são realizadas de forma segura e transparente, com confirmações na blockchain."
+          },
+          {
+            "question": "Há algum custo para usar o MidatoPay?",
+            "answer": "MidatoPay oferece uma solução transparente com taxas competitivas. Os custos são baseados no volume de transações e são claramente comunicados antes de cada operação."
+          }
+        ]
+      },
+      "askQuestion": {
+        "button": "Fazer uma pergunta",
+        "title": "Faça sua pergunta",
+        "questionLabel": "Sua pergunta",
+        "questionPlaceholder": "Escreva sua pergunta aqui...",
+        "contextLabel": "Contexto (opcional)",
+        "contextPlaceholder": "Por que você está fazendo esta pergunta? Compartilhe o contexto que nos ajudará a entender melhor...",
+        "submit": "Enviar pergunta",
+        "cancel": "Cancelar",
+        "success": "Obrigado! Sua pergunta foi enviada. Vamos revisá-la e adicioná-la às perguntas frequentes se for relevante.",
+        "error": "Por favor, complete pelo menos a pergunta antes de enviar."
+      }
+    },
+    "support": {
+      "title": "Tecnologia Utilizada:",
+      "starknet": {
+        "features": {
+          "cairo": "Contratos inteligentes Cairo",
+          "l2": "Rede L2 escalável",
+          "costs": "Custos baixos",
+          "security": "Segurança do Ethereum"
+        }
+      },
+      "cavos": {
+        "features": {
+          "wallets": "Carteiras invisíveis",
+          "integration": "Integração com Aegis SDK",
+          "auth": "Autenticação perfeita"
+        }
+      }
+    },
+    "ctaSection": {
+      "title": "Junte-se à nossa comunidade",
+      "waitlist": {
+        "title": "Lista de Espera",
+        "description": "Seja um dos primeiros a acessar o MidatoPay. Junte-se à nossa lista de espera e obtenha acesso prioritário quando lançarmos.",
+        "button": "Junte-se agora"
+      },
+      "news": {
+        "title": "Notícias",
+        "description": "Mantenha-se atualizado com nossas últimas conquistas, eventos e atualizações. Descubra como estamos revolucionando os pagamentos.",
+        "button": "Ver notícias"
+      }
+    },
+    "stats": {
+      "waitlist": "comerciantes esperando",
+      "billing": "USD em faturamento esperando",
+      "transactions": "transações bem-sucedidas",
+      "merchants": "comerciantes ativos"
+    },
+    "socialMedia": {
+      "title": "Siga-nos em nossas redes sociais"
     }
   },
   "typewriter": {
@@ -242,6 +337,12 @@
         "socialMedia": {
           "title": "Publicações em nossas redes sociais"
         }
+      },
+      "startupWorldCup": {
+        "title": "MidatoPay selecionado para competir no Startup World Cup em Buenos Aires",
+        "date": "12 de Novembro - 2025",
+        "excerpt": "Grandes notícias! MidatoPay foi selecionado para competir nas eliminatórias do Startup World Cup no AlephHub em Buenos Aires pela Crecimiento Argentina.",
+        "content": "Grandes notícias! 🎉\n\nMidatoPay foi selecionado para competir nas eliminatórias do Startup World Cup no AlephHub em Buenos Aires pela **Crecimiento Argentina**.\n\nMais um passo em direção ao nosso sonho de trazer inclusão financeira e pagamentos perfeitos entre cripto e fiat para toda a América Latina 🌎\n\nAgradecido à nossa equipe."
       },
       "startupHouse": {
         "title": "MidatoPay participará do Startup House da Starknet em Buenos Aires",
