@@ -351,6 +351,114 @@
         "content": "我们很高兴分享更多关于我们将在 2025 年 11 月 12 日至 16 日在阿根廷布宜诺斯艾利斯参加的 Starknet 创业之家计划的详细信息。\n\n创业之家是一个专为在 Starknet 上构建且已拥有运行中 MVP 的团队设计的计划。该计划在数天内提供经验丰富的构建者和导师的实践支持，以创建成功的、以用户为导向的业务。\n\n该计划旨在将您的项目从 MVP 扩展到成熟的初创公司，通过专家导师完善您的策略，并与投资者和风险投资公司建立网络机会。\n\n计划福利：\n\n• 升级的技术架构\n• 针对您产品的定制化市场进入计划\n• 首批客户获取策略\n• 清晰的 90 天增长路线图及后续支持\n• 与导师和 Starknet 构建者的新联系\n\n布宜诺斯艾利斯活动信息：\n\n• 地点：阿根廷布宜诺斯艾利斯\n• 日期：2025 年 11 月 12 日至 16 日\n• 重点：深入探讨您的 Starknet MVP 的技术改进和业务扩展\n• 包括：免费住宿、餐食、指导和研讨会\n\n我们很自豪能成为该计划的一部分，并期待与我们的社区分享我们的学习和进展。"
       }
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "start": "开始",
+      "wallet": "钱包",
+      "movements": "交易记录",
+      "logout": "登出"
+    },
+    "header": {
+      "start": "开始"
+    },
+    "welcome": "欢迎,",
+    "totalBalance": "总余额:",
+    "cryptoBalance": "加密货币余额:",
+    "filter": "筛选",
+    "balance": "余额",
+    "exchangeRate": "汇率",
+    "argentinePesos": "阿根廷比索",
+    "walletInformation": "钱包信息",
+    "walletDescription": "您已连接的 Cavos Aegis 钱包详情",
+    "address": "地址",
+    "yourWalletAddress": "您的钱包地址",
+    "network": "网络",
+    "testnet": "测试网",
+    "controlCenter": "控制中心",
+    "manageBusiness": "从这里管理您的业务",
+    "createPayment": "创建支付",
+    "instantQR": "即时二维码",
+    "walletConnected": "钱包已连接",
+    "connectWallet": "连接钱包",
+    "disconnecting": "断开连接中...",
+    "connecting": "连接中...",
+    "clickToConnect": "点击连接",
+    "clickToDisconnect": "点击断开",
+    "movements": "交易记录",
+    "transactionHistory": "交易历史",
+    "loadingMovements": "加载交易记录中...",
+    "errorLoading": "加载错误",
+    "noMovements": "暂无交易记录",
+    "successfulTransfers": "成功的转账将显示在这里",
+    "loading": "加载中...",
+    "walletConnectedStatus": "钱包已连接",
+    "walletDisconnectedStatus": "钱包未连接",
+    "addressCopied": "地址已复制",
+    "generateQR": "生成二维码",
+    "withdraw": "提取",
+    "viewHistory": "查看历史",
+    "settings": "设置",
+    "withdrawComingSoon": "功能即将推出",
+    "settingsComingSoon": "功能即将推出",
+    "createPayment": {
+      "backToDashboard": "返回仪表板",
+      "title": "创建付款",
+      "paymentDetails": "付款详情",
+      "completeDetails": "填写详细信息以生成付款二维码",
+      "amountInARS": "阿根廷比索金额",
+      "conversionPercentage": "转换百分比",
+      "cryptoToReceive": "接收的加密货币",
+      "oracleDescription": "您将根据 Oracle 汇率自动接收 USDT",
+      "exchangeRate": "汇率：$1,000 阿根廷比索 = 1 USDT",
+      "remainingAmountARS": "剩余阿根廷比索金额:",
+      "remainingAmountDescription": "您将收到总额的 {percentage}% ({amount} 阿根廷比索)",
+      "generateQR": "生成付款二维码",
+      "generatingQR": "正在生成二维码...",
+      "qrModal": {
+        "title": "二维码已生成！",
+        "shareQR": "分享此二维码",
+        "youWillReceive": "您将收到：",
+        "rate": "汇率：",
+        "calculating": "计算中...",
+        "copyQR": "复制二维码",
+        "copied": "已复制！",
+        "download": "下载",
+        "refreshQR": "刷新二维码",
+        "refreshing": "刷新中...",
+        "generatingNewQR": "正在生成新二维码...",
+        "close": "关闭",
+        "sessionID": "会话ID：",
+        "generated": "生成时间：",
+        "paymentQRCode": "付款二维码",
+        "errors": {
+          "errorCopyingQR": "复制二维码时出错",
+          "errorDownloadingQR": "下载二维码时出错"
+        },
+        "success": {
+          "qrCopied": "二维码已复制到剪贴板",
+          "qrDownloaded": "二维码已下载"
+        }
+      },
+      "errors": {
+        "mustBeAuthenticated": "您必须经过身份验证才能创建付款",
+        "amountMustBeGreater": "金额必须大于 0",
+        "errorGeneratingQR": "生成二维码时出错",
+        "errorUpdatingQR": "更新二维码时出错"
+      },
+      "success": {
+        "qrGenerated": "二维码生成成功！",
+        "qrUpdated": "二维码已更新"
+      }
+    },
+    "toasts": {
+      "sessionClosed": "会话已关闭",
+      "walletConnected": "钱包连接成功",
+      "walletDisconnected": "钱包已断开",
+      "noWalletConfigured": "未配置钱包。请使用 WalletSetup 组件。",
+      "errorConnecting": "连接钱包时出错",
+      "errorDisconnecting": "断开钱包时出错"
+    }
   }
 }
 

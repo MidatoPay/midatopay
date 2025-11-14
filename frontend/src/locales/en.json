@@ -351,6 +351,114 @@
         "content": "We are excited to share more details about the Starknet Startup House program we will be participating in from November 12-16, 2025 in Buenos Aires, Argentina.\n\nThe Startup House is a program designed for teams building on Starknet who already have a live MVP. The program offers hands-on support from experienced builders and mentors over the course of multiple days to create a successful, user-driven business.\n\nThis program is designed to scale your project from MVP to established startup, sharpen your strategies with expert mentors, and create networking opportunities with investors and VCs.\n\nProgram benefits:\n\n• Upgraded tech architecture\n• A go-to-market plan tailored to your product\n• First customer acquisition strategy\n• Clear 90-day growth roadmap with follow-up support\n• New connections with mentors and Starknet builders\n\nBuenos Aires event information:\n\n• Location: Buenos Aires, Argentina\n• Dates: November 12-16, 2025\n• Focus: Deep dive into tech refinement & business scaling for your Starknet MVP\n• Includes: Free accommodation, meals, mentorship, workshops\n\nWe are proud to be part of this program and look forward to sharing our learnings and progress with our community."
       }
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "start": "Start",
+      "wallet": "Wallet",
+      "movements": "Movements",
+      "logout": "Logout"
+    },
+    "header": {
+      "start": "Start"
+    },
+    "welcome": "Welcome,",
+    "totalBalance": "Total Balance:",
+    "cryptoBalance": "Crypto Balance:",
+    "filter": "Filter",
+    "balance": "Balance",
+    "exchangeRate": "Exchange Rate",
+    "argentinePesos": "Argentine Pesos",
+    "walletInformation": "Wallet Information",
+    "walletDescription": "Details of your connected Cavos Aegis wallet",
+    "address": "Address",
+    "yourWalletAddress": "Your wallet address",
+    "network": "Network",
+    "testnet": "Testnet",
+    "controlCenter": "Control Center",
+    "manageBusiness": "Manage your business from here",
+    "createPayment": "Create Payment",
+    "instantQR": "Instant QR",
+    "walletConnected": "Wallet Connected",
+    "connectWallet": "Connect Wallet",
+    "disconnecting": "Disconnecting...",
+    "connecting": "Connecting...",
+    "clickToConnect": "Click to connect",
+    "clickToDisconnect": "Click to disconnect",
+    "movements": "Movements",
+    "transactionHistory": "Transaction history",
+    "loadingMovements": "Loading movements...",
+    "errorLoading": "Error loading",
+    "noMovements": "No movements yet",
+    "successfulTransfers": "Successful transfers will appear here",
+    "loading": "Loading...",
+    "walletConnectedStatus": "Wallet Connected",
+    "walletDisconnectedStatus": "Wallet Disconnected",
+    "addressCopied": "Address copied",
+    "generateQR": "Generate QR",
+    "withdraw": "Withdraw",
+    "viewHistory": "View History",
+    "settings": "Settings",
+    "withdrawComingSoon": "Feature coming soon",
+    "settingsComingSoon": "Feature coming soon",
+    "createPayment": {
+      "backToDashboard": "Back to Dashboard",
+      "title": "Create Payment",
+      "paymentDetails": "Payment Details",
+      "completeDetails": "Complete the details to generate the payment QR",
+      "amountInARS": "Amount in ARS",
+      "conversionPercentage": "Conversion Percentage",
+      "cryptoToReceive": "Crypto to Receive",
+      "oracleDescription": "You will automatically receive USDT according to the Oracle rate",
+      "exchangeRate": "Exchange rate: $1,000 ARS = 1 USDT",
+      "remainingAmountARS": "Remaining Amount in ARS:",
+      "remainingAmountDescription": "You will receive {percentage}% ({amount} ARS) of the total amount",
+      "generateQR": "Generate Payment QR",
+      "generatingQR": "Generating QR...",
+      "qrModal": {
+        "title": "QR Generated!",
+        "shareQR": "Share this QR code",
+        "youWillReceive": "You will receive:",
+        "rate": "Rate:",
+        "calculating": "Calculating...",
+        "copyQR": "Copy QR",
+        "copied": "Copied!",
+        "download": "Download",
+        "refreshQR": "Refresh QR",
+        "refreshing": "Refreshing...",
+        "generatingNewQR": "Generating new QR...",
+        "close": "Close",
+        "sessionID": "Session ID:",
+        "generated": "Generated:",
+        "paymentQRCode": "Payment QR Code",
+        "errors": {
+          "errorCopyingQR": "Error copying QR",
+          "errorDownloadingQR": "Error downloading QR"
+        },
+        "success": {
+          "qrCopied": "QR copied to clipboard",
+          "qrDownloaded": "QR downloaded"
+        }
+      },
+      "errors": {
+        "mustBeAuthenticated": "You must be authenticated to create payments",
+        "amountMustBeGreater": "Amount must be greater than 0",
+        "errorGeneratingQR": "Error generating QR",
+        "errorUpdatingQR": "Error updating QR"
+      },
+      "success": {
+        "qrGenerated": "QR generated successfully!",
+        "qrUpdated": "QR updated"
+      }
+    },
+    "toasts": {
+      "sessionClosed": "Session closed",
+      "walletConnected": "Wallet connected successfully",
+      "walletDisconnected": "Wallet disconnected",
+      "noWalletConfigured": "No wallet configured. Use the WalletSetup component.",
+      "errorConnecting": "Error connecting wallet",
+      "errorDisconnecting": "Error disconnecting wallet"
+    }
   }
 }
 

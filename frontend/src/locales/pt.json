@@ -351,6 +351,114 @@
         "content": "Estamos animados em compartilhar mais detalhes sobre o programa Startup House da Starknet em que participaremos de 12 a 16 de novembro de 2025 em Buenos Aires, Argentina.\n\nO Startup House é um programa projetado para equipes que estão construindo na Starknet e que já têm um MVP em funcionamento. O programa oferece suporte prático de construtores e mentores experientes ao longo de vários dias para criar um negócio bem-sucedido e orientado pelo usuário.\n\nEste programa é projetado para escalar seu projeto de MVP para uma startup estabelecida, aprimorar suas estratégias com mentores especialistas e criar oportunidades de networking com investidores e VCs.\n\nBenefícios do programa:\n\n• Arquitetura tecnológica aprimorada\n• Um plano de go-to-market personalizado para seu produto\n• Estratégia de aquisição dos primeiros clientes\n• Roteiro claro de crescimento de 90 dias com acompanhamento e suporte\n• Novas conexões com mentores e desenvolvedores da Starknet\n\nInformações do evento Buenos Aires:\n\n• Localização: Buenos Aires, Argentina\n• Datas: 12 a 16 de novembro de 2025\n• Foco: Mergulho profundo em refinamento técnico e escalonamento de negócios para seu MVP da Starknet\n• Inclui: Acomodação gratuita, refeições, mentoria e workshops\n\nEstamos orgulhosos de fazer parte deste programa e esperamos compartilhar nossos aprendizados e progresso com nossa comunidade."
       }
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "start": "Início",
+      "wallet": "Carteira",
+      "movements": "Movimentos",
+      "logout": "Sair"
+    },
+    "header": {
+      "start": "Início"
+    },
+    "welcome": "Bem-vindo,",
+    "totalBalance": "Saldo Total:",
+    "cryptoBalance": "Saldo em Criptomoedas:",
+    "filter": "Filtrar",
+    "balance": "Saldo",
+    "exchangeRate": "Taxa de Câmbio",
+    "argentinePesos": "Pesos Argentinos",
+    "walletInformation": "Informações da Carteira",
+    "walletDescription": "Detalhes da sua carteira Cavos Aegis conectada",
+    "address": "Endereço",
+    "yourWalletAddress": "Seu endereço de carteira",
+    "network": "Rede",
+    "testnet": "Rede de Teste",
+    "controlCenter": "Centro de Controle",
+    "manageBusiness": "Gerencie seu negócio daqui",
+    "createPayment": "Criar Pagamento",
+    "instantQR": "QR Instantâneo",
+    "walletConnected": "Carteira Conectada",
+    "connectWallet": "Conectar Carteira",
+    "disconnecting": "Desconectando...",
+    "connecting": "Conectando...",
+    "clickToConnect": "Clique para conectar",
+    "clickToDisconnect": "Clique para desconectar",
+    "movements": "Movimentos",
+    "transactionHistory": "Histórico de transações",
+    "loadingMovements": "Carregando movimentos...",
+    "errorLoading": "Erro ao carregar",
+    "noMovements": "Nenhum movimento ainda",
+    "successfulTransfers": "Transferências bem-sucedidas aparecerão aqui",
+    "loading": "Carregando...",
+    "walletConnectedStatus": "Carteira Conectada",
+    "walletDisconnectedStatus": "Carteira Desconectada",
+    "addressCopied": "Endereço copiado",
+    "generateQR": "Gerar QR",
+    "withdraw": "Sacar",
+    "viewHistory": "Ver Histórico",
+    "settings": "Configurações",
+    "withdrawComingSoon": "Funcionalidade em breve",
+    "settingsComingSoon": "Funcionalidade em breve",
+    "createPayment": {
+      "backToDashboard": "Voltar ao Dashboard",
+      "title": "Criar Pagamento",
+      "paymentDetails": "Detalhes do Pagamento",
+      "completeDetails": "Complete os detalhes para gerar o código QR de pagamento",
+      "amountInARS": "Valor em ARS",
+      "conversionPercentage": "Porcentagem de Conversão",
+      "cryptoToReceive": "Cripto a Receber",
+      "oracleDescription": "Você receberá USDT automaticamente de acordo com a taxa do Oracle",
+      "exchangeRate": "Taxa de câmbio: $1.000 ARS = 1 USDT",
+      "remainingAmountARS": "Valor Restante em ARS:",
+      "remainingAmountDescription": "Você receberá {percentage}% ({amount} ARS) do valor total",
+      "generateQR": "Gerar Código QR de Pagamento",
+      "generatingQR": "Gerando QR...",
+      "qrModal": {
+        "title": "QR Gerado!",
+        "shareQR": "Compartilhe este código QR",
+        "youWillReceive": "Você receberá:",
+        "rate": "Taxa:",
+        "calculating": "Calculando...",
+        "copyQR": "Copiar QR",
+        "copied": "Copiado!",
+        "download": "Baixar",
+        "refreshQR": "Atualizar QR",
+        "refreshing": "Atualizando...",
+        "generatingNewQR": "Gerando novo QR...",
+        "close": "Fechar",
+        "sessionID": "ID da Sessão:",
+        "generated": "Gerado:",
+        "paymentQRCode": "Código QR de Pagamento",
+        "errors": {
+          "errorCopyingQR": "Erro ao copiar QR",
+          "errorDownloadingQR": "Erro ao baixar QR"
+        },
+        "success": {
+          "qrCopied": "QR copiado para a área de transferência",
+          "qrDownloaded": "QR baixado"
+        }
+      },
+      "errors": {
+        "mustBeAuthenticated": "Você deve estar autenticado para criar pagamentos",
+        "amountMustBeGreater": "O valor deve ser maior que 0",
+        "errorGeneratingQR": "Erro ao gerar o código QR",
+        "errorUpdatingQR": "Erro ao atualizar o código QR"
+      },
+      "success": {
+        "qrGenerated": "Código QR gerado com sucesso!",
+        "qrUpdated": "Código QR atualizado"
+      }
+    },
+    "toasts": {
+      "sessionClosed": "Sessão encerrada",
+      "walletConnected": "Carteira conectada com sucesso",
+      "walletDisconnected": "Carteira desconectada",
+      "noWalletConfigured": "Nenhuma carteira configurada. Use o componente WalletSetup.",
+      "errorConnecting": "Erro ao conectar carteira",
+      "errorDisconnecting": "Erro ao desconectar carteira"
+    }
   }
 }
 

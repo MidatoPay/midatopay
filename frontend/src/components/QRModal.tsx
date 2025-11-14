@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { QrCode, Copy, Download, X, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface QRModalProps {
   isOpen: boolean;
@@ -32,17 +33,41 @@ export function QRModal({
   refreshing = false 
 }: QRModalProps) {
   const [copied, setCopied] = useState(false);
+  const { t, language } = useLanguage();
+
+  // Función para obtener el locale según el idioma
+  const getLocale = () => {
+    switch (language) {
+      case 'es': return 'es-AR';
+      case 'en': return 'en-US';
+      case 'it': return 'it-IT';
+      case 'pt': return 'pt-BR';
+      case 'cn': return 'zh-CN';
+      default: return 'en-US';
+    }
+  };
 
   if (!isOpen || !qrData) return null;
+
+  // Calcular el monto en USDT usando la tasa fija: $1,000 ARS = 1 USDT
+  const calculateUSDTAmount = (amountARS: number): number => {
+    // Tasa fija: 1 USDT = 1,000 ARS
+    return amountARS / 1000;
+  };
+
+  // Obtener el monto en USDT (usar el del backend si existe y es válido, sino calcularlo)
+  const usdtAmount = qrData.paymentData.cryptoAmount && qrData.paymentData.cryptoAmount > 0
+    ? qrData.paymentData.cryptoAmount
+    : calculateUSDTAmount(qrData.paymentData.amountARS);
 
   const handleCopyQR = async () => {
     try {
       await navigator.clipboard.writeText(qrData.qrCodeImage);
       setCopied(true);
-      toast.success('QR copied to clipboard');
+      toast.success(t.dashboard.createPayment.qrModal.success.qrCopied);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Error copying QR');
+      toast.error(t.dashboard.createPayment.qrModal.errors.errorCopyingQR);
     }
   };
 
@@ -52,9 +77,9 @@ export function QRModal({
       link.href = qrData.qrCodeImage;
       link.download = `pago-${qrData.paymentData.sessionId}.png`;
       link.click();
-      toast.success('QR downloaded');
+      toast.success(t.dashboard.createPayment.qrModal.success.qrDownloaded);
     } catch (error) {
-      toast.error('Error downloading QR');
+      toast.error(t.dashboard.createPayment.qrModal.errors.errorDownloadingQR);
     }
   };
 
@@ -76,10 +101,10 @@ export function QRModal({
             </div>
             <div>
               <h2 className="text-xl font-bold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif' }}>
-                QR Generated!
+                {t.dashboard.createPayment.qrModal.title}
               </h2>
               <p className="text-sm" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}>
-                Share this QR code
+                {t.dashboard.createPayment.qrModal.shareQR}
               </p>
             </div>
           </div>
@@ -99,7 +124,7 @@ export function QRModal({
           <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-200">
             <img
               src={qrData.qrCodeImage}
-              alt="Payment QR Code"
+              alt={t.dashboard.createPayment.qrModal.paymentQRCode}
               className="w-64 h-64 mx-auto"
             />
             
@@ -108,7 +133,7 @@ export function QRModal({
                 <div className="flex items-center justify-center space-x-2">
                   <div className="w-4 h-4 rounded-full border-2 border-orange-200 border-t-orange-500 animate-spin"></div>
                   <p className="text-sm" style={{ color: '#fe6c1c', fontFamily: 'Kufam, sans-serif' }}>
-                    Generating new QR...
+                    {t.dashboard.createPayment.qrModal.generatingNewQR}
                   </p>
                 </div>
               </div>
@@ -121,14 +146,14 @@ export function QRModal({
               {qrData.paymentData.merchantName}
             </h3>
             <p className="text-2xl font-bold" style={{ color: '#1a1a1a', fontFamily: 'Kufam, sans-serif' }}>
-              ${qrData.paymentData.amountARS.toLocaleString()} ARS
+              ${qrData.paymentData.amountARS.toLocaleString(getLocale())} ARS
             </p>
             <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
               <p className="text-sm text-blue-800" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                <span className="font-semibold">You will receive:</span> {qrData.paymentData.cryptoAmount?.toFixed(6) || 'Calculating...'} {qrData.paymentData.targetCrypto || 'USDT'}
+                <span className="font-semibold">{t.dashboard.createPayment.qrModal.youWillReceive}</span> {usdtAmount.toFixed(6)} {qrData.paymentData.targetCrypto || 'USDT'}
               </p>
               <p className="text-xs text-blue-600 mt-1" style={{ fontFamily: 'Kufam, sans-serif' }}>
-                Rate: 1 {qrData.paymentData.targetCrypto || 'USDT'} = {qrData.paymentData.exchangeRate?.toLocaleString() || 'Calculating...'} ARS
+                {t.dashboard.createPayment.exchangeRate}
               </p>
             </div>
           </div>
@@ -143,7 +168,7 @@ export function QRModal({
               style={{ fontFamily: 'Kufam, sans-serif' }}
             >
               <Copy className="w-4 h-4 mr-2" />
-              {copied ? 'Copied!' : 'Copy QR'}
+              {copied ? t.dashboard.createPayment.qrModal.copied : t.dashboard.createPayment.qrModal.copyQR}
             </Button>
             <Button
               className="flex-1 h-12 rounded-xl"
@@ -151,7 +176,7 @@ export function QRModal({
               onClick={handleDownloadQR}
             >
               <Download className="w-4 h-4 mr-2" />
-              Download
+              {t.dashboard.createPayment.qrModal.download}
             </Button>
           </div>
 
@@ -165,14 +190,14 @@ export function QRModal({
               style={{ fontFamily: 'Kufam, sans-serif' }}
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : 'Refresh QR'}
+              {refreshing ? t.dashboard.createPayment.qrModal.refreshing : t.dashboard.createPayment.qrModal.refreshQR}
             </Button>
           )}
 
           {/* Información adicional */}
           <div className="text-xs space-y-1" style={{ color: '#5d5d5d', fontFamily: 'Kufam, sans-serif' }}>
-            <p>Session ID: {qrData.paymentData.sessionId}</p>
-            <p>Generated: {new Date().toLocaleString('en-US')}</p>
+            <p>{t.dashboard.createPayment.qrModal.sessionID} {qrData.paymentData.sessionId}</p>
+            <p>{t.dashboard.createPayment.qrModal.generated} {new Date().toLocaleString(getLocale())}</p>
           </div>
 
           {/* Botón cerrar */}
@@ -182,7 +207,7 @@ export function QRModal({
             onClick={onClose}
             style={{ fontFamily: 'Kufam, sans-serif' }}
           >
-            Close
+            {t.dashboard.createPayment.qrModal.close}
           </Button>
         </div>
       </motion.div>

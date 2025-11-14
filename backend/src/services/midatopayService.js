@@ -226,13 +226,42 @@ class MidatoPayService {
       
       // Detectar sistema operativo y usar la ruta correcta
       const isWindows = process.platform === 'win32';
-      const starkliPath = process.env.STARKLI_PATH || (isWindows 
-        ? 'C:\\Users\\monst\\midatopay\\starknet-token\\starkli\\.starkli\\bin\\starkli.exe'
-        : 'starkli' // En Linux, starkli debe estar instalado globalmente o en PATH
-      );
+      const fs = require('fs');
+      const path = require('path');
+      
+      // Intentar encontrar starkli en diferentes ubicaciones
+      let starkliPath = process.env.STARKLI_PATH;
+      
+      if (!starkliPath) {
+        const possiblePaths = [
+          'C:\\Users\\monst\\midatopay\\starknet-token\\starkli\\.starkli\\bin\\starkli.exe',
+          path.join(__dirname, '../../starknet-token/starkli/.starkli/bin/starkli.exe'),
+          'starkli' // Intentar desde PATH
+        ];
+        
+        for (const testPath of possiblePaths) {
+          if (testPath === 'starkli') {
+            // Si es 'starkli', asumimos que está en PATH
+            starkliPath = 'starkli';
+            break;
+          } else if (fs.existsSync(testPath)) {
+            starkliPath = testPath;
+            break;
+          }
+        }
+        
+        // Si no se encontró, usar 'starkli' y esperar que esté en PATH
+        if (!starkliPath) {
+          starkliPath = 'starkli';
+        }
+      }
+      
+      // Verificar que starkli existe (si no es 'starkli' desde PATH)
+      if (starkliPath !== 'starkli' && !fs.existsSync(starkliPath)) {
+        throw new Error(`starkli no encontrado en: ${starkliPath}. Por favor, instala starkli o configura STARKLI_PATH en las variables de entorno.`);
+      }
       
       // Rutas de configuración (keystore y account)
-      const path = require('path');
       const starknetTokenPath = process.env.STARKNET_TOKEN_PATH || (isWindows
         ? 'C:\\Users\\monst\\midatopay\\starknet-token'
         : '/var/www/midatopay/starknet-token'
